@@ -1,0 +1,120 @@
+/* ===============================
+   VARIABLES
+================================== */
+
+:root{
+
+    --primary:#059669;
+    --primary-dark:#047857;
+
+    --secondary:#0ea5e9;
+
+    --bg:#f8fafc;
+
+    --white:#ffffff;
+
+    --text:#1e293b;
+
+    --text-light:#64748b;
+
+    --border:#e2e8f0;
+
+    --radius:18px;
+
+    --shadow:
+    0 10px 30px rgba(0,0,0,.08);
+
+}
+
+
+/* ===============================
+   CONTAINER
+================================== */
+
+.container{
+
+    width:min(1200px,90%);
+
+    margin:auto;
+
+}
+
+
+/* ===============================
+   TITLE
+================================== */
+
+.section-title{
+
+    font-size:36px;
+
+    font-weight:700;
+
+    text-align:center;
+
+    margin-bottom:15px;
+
+}
+
+.section-subtitle{
+
+    color:var(--text-light);
+
+    text-align:center;
+
+    margin-bottom:60px;
+
+}
+
+
+/* ===============================
+   BUTTON
+================================== */
+
+.btn{
+
+    display:inline-flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:14px 28px;
+
+    border-radius:12px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.btn-primary{
+
+    background:var(--primary);
+
+    color:white;
+
+}
+
+.btn-primary:hover{
+
+    background:var(--primary-dark);
+
+}
+
+.btn-outline{
+
+    border:2px solid var(--primary);
+
+    color:var(--primary);
+
+}
+
+.btn-outline:hover{
+
+    background:var(--primary);
+
+    color:white;
+
+}

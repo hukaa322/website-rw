@@ -1,0 +1,22 @@
+[
+    {
+        "nama":"Ahmad Fauzi",
+        "jabatan":"Ketua RW",
+        "telepon":"081234567890",
+        "foto":"assets/img/pengurus/ketua.jpg"
+    },
+
+    {
+        "nama":"Budi Santoso",
+        "jabatan":"Sekretaris",
+        "telepon":"081298765432",
+        "foto":"assets/img/pengurus/sekretaris.jpg"
+    },
+
+    {
+        "nama":"Rina Lestari",
+        "jabatan":"Bendahara",
+        "telepon":"081345678912",
+        "foto":"assets/img/pengurus/bendahara.jpg"
+    }
+]

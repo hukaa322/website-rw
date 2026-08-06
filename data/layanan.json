@@ -1,0 +1,43 @@
+[
+    {
+        "icon":"fa-file-signature",
+        "judul":"Surat Pengantar",
+        "deskripsi":"Pengantar untuk mengurus administrasi di Kelurahan.",
+        "waktu":"1 Hari Kerja"
+    },
+
+    {
+        "icon":"fa-house",
+        "judul":"Surat Domisili",
+        "deskripsi":"Surat keterangan domisili warga.",
+        "waktu":"1 Hari Kerja"
+    },
+
+    {
+        "icon":"fa-id-card",
+        "judul":"Surat Keterangan",
+        "deskripsi":"Surat keterangan sesuai kebutuhan warga.",
+        "waktu":"2 Hari Kerja"
+    },
+
+    {
+        "icon":"fa-users",
+        "judul":"Surat Pengantar KK",
+        "deskripsi":"Pengantar pembuatan Kartu Keluarga.",
+        "waktu":"2 Hari Kerja"
+    },
+
+    {
+        "icon":"fa-baby",
+        "judul":"Surat Kelahiran",
+        "deskripsi":"Pengantar pengurusan akta kelahiran.",
+        "waktu":"2 Hari Kerja"
+    },
+
+    {
+        "icon":"fa-heart",
+        "judul":"Surat Kematian",
+        "deskripsi":"Pengantar pengurusan akta kematian.",
+        "waktu":"2 Hari Kerja"
+    }
+]

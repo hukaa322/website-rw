@@ -1,0 +1,56 @@
+/* ===============================
+   RESET CSS
+================================== */
+
+*,
+*::before,
+*::after{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:'Plus Jakarta Sans',sans-serif;
+    background:#f8fafc;
+    color:#1e293b;
+    overflow-x:hidden;
+    line-height:1.6;
+}
+
+img{
+    max-width:100%;
+    display:block;
+}
+
+a{
+    text-decoration:none;
+    color:inherit;
+}
+
+ul{
+    list-style:none;
+}
+
+button{
+    border:none;
+    outline:none;
+    cursor:pointer;
+    background:none;
+}
+
+input,
+textarea,
+select{
+    outline:none;
+    border:none;
+    font-family:inherit;
+}
+
+section{
+    padding:80px 0;
+}
