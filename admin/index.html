@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Vireta 2</title>
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <!-- CSS Master Layout -->
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/style-landing.css">
+    <link rel="stylesheet" href="css/admin-layout.css">
+
+    <!-- Auth Guard Middleware -->
+    <script src="../js/auth-check.js"></script>
+</head>
+<body>
+
+    <!-- CONTAINER NAVBAR DESKTOP -->
+    <div id="navbar-wrapper"></div>
+
+    <!-- MAIN DYNAMIC CONTENT CONTAINER -->
+    <main class="admin-content" id="router-view">
+        <!-- Halaman dari /pages akan dimuat di sini -->
+    </main>
+
+    <!-- CONTAINER FOOTNAVBAR HP -->
+    <div id="footnavbar-wrapper"></div>
+
+    <!-- ROUTER CONTROLLER -->
+    <script src="js/admin-router.js"></script>
+    <script src="js/rt-module.js"></script>
+</body>
+</html>

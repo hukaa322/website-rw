@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Pengurus - Vireta 2</title>
+    <meta name="robots" content="noindex, nofollow">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/style-landing.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #00468B, #001F3F);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: #FFFFFF;
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 30px;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            border-top: 5px solid var(--accent-yellow);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header img {
+            width: 60px;
+            margin: 0 auto 10px auto;
+        }
+
+        .login-header h2 {
+            color: var(--primary-blue);
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .login-header p {
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--dark-text);
+        }
+
+        .input-box {
+            position: relative;
+        }
+
+        .input-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .input-box input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            transition: all 0.25s ease;
+        }
+
+        .input-box input:focus {
+            border-color: var(--primary-blue);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent-red);
+            color: white;
+            font-weight: 700;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            margin-top: 10px;
+        }
+
+        .login-btn:hover {
+            background: var(--accent-red-hover);
+        }
+
+        .alert-error {
+            background: #F8D7DA;
+            color: #721C24;
+            padding: 10px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <div class="login-header">
+        <img src="../assets/img/logo.png" alt="Logo Vireta 2">
+        <h2>PORTAL ADMINISTRATOR</h2>
+        <p>Akses Terbatas Khusus Pengurus RW 05 Vireta 2</p>
+    </div>
+
+    <div id="errorMsg" class="alert-error">
+        <i class="fa-solid fa-triangle-exclamation"></i> Username atau Password salah!
+    </div>
+
+    <form id="loginForm">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <div class="input-box">
+                <i class="fa-solid fa-user"></i>
+                <input type="text" id="username" placeholder="Masukkan username" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-box">
+                <i class="fa-solid fa-lock"></i>
+                <input type="password" id="password" placeholder="Masukkan password" required>
+            </div>
+        </div>
+
+        <button type="submit" class="login-btn">
+            <i class="fa-solid fa-right-to-bracket"></i> Masuk Sistem
+        </button>
+    </form>
+</div>
+
+<!-- HANYA PANGGUL LOGIN.JS SAJA -->
+<script src="login.js"></script>
+
+</body>
+</html>
