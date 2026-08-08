@@ -1,19 +1,21 @@
 (async function checkAdminAuth() {
-    // Konsisten gunakan localhost:3000 agar Cookie HTTP-Only terkirim dengan benar
-    const apiUrl = "http://localhost:3000/api/admin/dashboard-data";
-
     try {
-        const res = await fetch(apiUrl, {
+        // Ambil URL dari API.CHECK_AUTH jika ada, fallback ke localhost
+        const apiUrl = (window.API && window.API.CHECK_AUTH) 
+            ? window.API.CHECK_AUTH 
+            : "http://localhost:3000/api/admin/dashboard-data";
+        
+        const fetcher = typeof window.apiFetch === "function" ? window.apiFetch : fetch;
+
+        const res = await fetcher(apiUrl, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json"
-            },
-            credentials: "include" // Wajib agar Cookie HTTP-Only ikut terkirim
+            }
         });
 
         if (!res.ok) {
             console.warn("Sesi admin tidak valid atau kadaluwarsa.");
-            // Redirect kembali ke halaman login (bukan ke root)
             window.location.href = "../login/index.html";
             return;
         }

@@ -1,28 +1,35 @@
 <section id="layanan" class="section-padding">
     <div class="container">
-        <div class="section-header">
+        <div class="section-header text-center margin-bottom-30">
             <h2 class="section-title">Layanan Warga</h2>
             <p class="section-subtitle">"Pelayanan Administrasi, Iuran, Kesehatan & Keamanan Warga Vireta 2"</p>
         </div>
 
-        <!-- Tombol Tab Filter Kategori Layanan -->
-        <div class="layanan-tabs text-center margin-bottom-30">
-            <button class="layanan-tab-btn active" data-category="semua">Semua Layanan</button>
-            <button class="layanan-tab-btn" data-category="administrasi">Surat & Administrasi</button>
-            <button class="layanan-tab-btn" data-category="iuran">Pembayaran Iuran</button>
-            <button class="layanan-tab-btn" data-category="kesehatan">Kesehatan</button>
-            <button class="layanan-tab-btn" data-category="keamanan">Keamanan</button>
+        <div class="gallery-page-header text-center margin-bottom-30">
+            <div class="gallery-pill-filter">
+                <button class="pill-btn layanan-tab-btn active" data-category="semua">
+                    <i class="fa-solid fa-border-all"></i> Semua
+                </button>
+                <button class="pill-btn layanan-tab-btn" data-category="administrasi">
+                    <i class="fa-solid fa-file-signature"></i> Surat Administrasi
+                </button>
+                <button class="pill-btn layanan-tab-btn" data-category="iuran">
+                    <i class="fa-solid fa-receipt"></i> Pembayaran Iuran
+                </button>
+                <button class="pill-btn layanan-tab-btn" data-category="kesehatan">
+                    <i class="fa-solid fa-heart-pulse"></i> Kesehatan
+                </button>
+                <button class="pill-btn layanan-tab-btn" data-category="keamanan">
+                    <i class="fa-solid fa-shield-halved"></i> Keamanan
+                </button>
+            </div>
         </div>
 
-        <!-- Container Grid Layanan -->
         <div id="layananGrid" class="layanan-grid">
-            <!-- Content akan di-render secara dinamis oleh JavaScript -->
-        </div>
-
-        <div class="text-center margin-top-40">
-            <a href="layanan.html" class="btn btn-primary">
-                <i class="fa-solid fa-file-lines"></i> Lihat Seluruh Layanan Warga
-            </a>
+            <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #64748B;">
+                <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+                <p style="margin-top: 10px; font-weight: 600;">Memuat layanan warga...</p>
+            </div>
         </div>
     </div>
 </section>

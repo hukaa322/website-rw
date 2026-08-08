@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Berita - Vireta 2</title>
+
+    <!-- Google Fonts & Font Awesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/style-landing.css">
+
+    <style>
+        body {
+            background-color: #F8FAFC;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #0F172A;
+        }
+
+        .article-container {
+            max-width: 840px;
+            margin: 40px auto 80px;
+            padding: 0 20px;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            color: #475569;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+            margin-bottom: 24px;
+        }
+
+        .btn-back:hover {
+            background: #F1F5F9;
+            color: #0F172A;
+            transform: translateX(-3px);
+        }
+
+        .article-card {
+            background: #FFFFFF;
+            border-radius: 16px;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            padding: 32px;
+        }
+
+        @media (max-width: 640px) {
+            .article-card {
+                padding: 20px;
+            }
+        }
+
+        .article-badge {
+            display: inline-block;
+            background: #E0F2FE;
+            color: #0369A1;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .article-title {
+            font-size: 30px;
+            font-weight: 800;
+            line-height: 1.3;
+            color: #0F172A;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 640px) {
+            .article-title {
+                font-size: 22px;
+            }
+        }
+
+        .article-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #F1F5F9;
+            margin-bottom: 24px;
+            color: #64748B;
+            font-size: 14px;
+        }
+
+        .article-meta item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .article-cover-wrapper {
+            width: 100%;
+            max-height: 420px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 32px;
+            background: #F1F5F9;
+        }
+
+        .article-cover-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .article-body {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #334155;
+            white-space: pre-line;
+        }
+
+        .article-footer {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid #F1F5F9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-share {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #F1F5F9;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-share:hover {
+            background: #00468B;
+            color: #FFFFFF;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="article-container">
+        <!-- Tombol Kembali -->
+        <a href="index.html#berita" class="btn-back">
+            <i class="fa-solid fa-arrow-left"></i> Kembali ke Berita
+        </a>
+
+        <!-- Wrapper Konten Artikel -->
+        <article id="detailNewsWrapper" class="article-card">
+            <div style="text-align: center; padding: 60px 20px; color: #64748B;">
+                <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+                <p style="margin-top: 12px; font-weight: 600;">Memuat detail berita...</p>
+            </div>
+        </article>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/detail-berita.js"></script>
+</body>
+</html>

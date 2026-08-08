@@ -1,34 +1,83 @@
-<div class="crud-card">
-    <div class="tab-group">
-        <button class="tab-btn active" onclick="switchTab('tab-umkm', this)">UMKM Warga</button>
-        <button class="tab-btn" onclick="switchTab('tab-kegiatan', this)">Dokumentasi Kegiatan</button>
-        <button class="tab-btn" onclick="switchTab('tab-ikon', this)">Ikon Warga</button>
+<!-- HEADER HALAMAN GALERI -->
+<div class="gallery-page-header">
+    <h2 class="gallery-title">Galeri Warga & UMKM</h2>
+    <p class="gallery-subtitle">"Daya Cipta, Usaha Lokal, dan Kebersamaan Warga Vireta 2"</p>
+    
+    <!-- PILL FILTER BUTTONS (Gaya Desain Landing Page) -->
+    <div class="gallery-pill-filter">
+        <button class="pill-btn active" onclick="switchTab('tab-umkm', this)">
+            <i class="fa-solid fa-store"></i> UMKM Warga
+        </button>
+        <button class="pill-btn" onclick="switchTab('tab-kegiatan', this)">
+            <i class="fa-solid fa-camera-retro"></i> Kegiatan RW
+        </button>
+        <button class="pill-btn" onclick="switchTab('tab-ikon', this)">
+            <i class="fa-solid fa-user-tie"></i> Ikon Warga
+        </button>
     </div>
+</div>
 
-    <!-- Sub-tab UMKM -->
+<!-- CARD CONTAINER CRUD -->
+<div class="crud-card">
+    
+    <!-- SUB-TAB 1: UMKM WARGA -->
     <div id="tab-umkm" class="tab-content">
         <div class="crud-header">
-            <h3>Daftar UMKM Warga</h3>
-            <button class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Tambah UMKM</button>
+            <div class="header-info">
+                <h3>Daftar UMKM Warga</h3>
+                <span class="badge-count" id="count-umkm">0 Data</span>
+            </div>
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Cari UMKM..." onkeyup="filterGaleriTable(this, 'container-umkm')">
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="openGaleriModal('umkm')">
+                    <i class="fa-solid fa-plus"></i> Tambah UMKM
+                </button>
+            </div>
         </div>
-        <p>Konten data UMKM...</p>
+        <div id="container-umkm" class="table-responsive"></div>
     </div>
 
-    <!-- Sub-tab Kegiatan -->
+    <!-- SUB-TAB 2: DOKUMENTASI KEGIATAN -->
     <div id="tab-kegiatan" class="tab-content" style="display:none;">
         <div class="crud-header">
-            <h3>Dokumentasi Kegiatan RW</h3>
-            <button class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Upload Foto Kegiatan</button>
+            <div class="header-info">
+                <h3>Dokumentasi Kegiatan RW</h3>
+                <span class="badge-count" id="count-kegiatan">0 Data</span>
+            </div>
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Cari Kegiatan..." onkeyup="filterGaleriTable(this, 'container-kegiatan')">
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="openGaleriModal('kegiatan')">
+                    <i class="fa-solid fa-plus"></i> Upload Foto
+                </button>
+            </div>
         </div>
-        <p>Konten foto kegiatan...</p>
+        <div id="container-kegiatan" class="table-responsive"></div>
     </div>
 
-    <!-- Sub-tab Ikon Warga -->
+    <!-- SUB-TAB 3: IKON / TOKOH WARGA -->
     <div id="tab-ikon" class="tab-content" style="display:none;">
         <div class="crud-header">
-            <h3>Ikon / Tokoh Warga</h3>
-            <button class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Tambah Tokoh</button>
+            <div class="header-info">
+                <h3>Ikon / Tokoh Warga</h3>
+                <span class="badge-count" id="count-ikon">0 Data</span>
+            </div>
+            <div class="header-actions">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Cari Tokoh..." onkeyup="filterGaleriTable(this, 'container-ikon')">
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="openGaleriModal('ikon')">
+                    <i class="fa-solid fa-plus"></i> Tambah Tokoh
+                </button>
+            </div>
         </div>
-        <p>Konten profil ikon warga...</p>
+        <div id="container-ikon" class="table-responsive"></div>
     </div>
+
 </div>

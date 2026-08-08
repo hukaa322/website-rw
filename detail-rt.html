@@ -31,37 +31,11 @@
             <p class="section-subtitle">Informasi Detail Ketua RT dan Wilayah Menjabat</p>
         </div>
 
-        <!-- Detail Card RT -->
-        <div class="about-grid margin-bottom-30" style="background: white; padding: 30px; border-radius: var(--radius-lg); box-shadow: var(--shadow-md);">
-            <!-- Slider Foto RT / Kegiatan -->
-            <div class="slider-wrapper about-slider">
-                <img src="assets/img/rt01-1.jpg" alt="Ketua RT 01" class="slide-img active">
-                <img src="assets/img/rt01-2.jpg" alt="Kegiatan RT 01" class="slide-img">
-                <div class="slider-controls">
-                    <button class="prev-slide"><i class="fa-solid fa-chevron-left"></i></button>
-                    <button class="next-slide"><i class="fa-solid fa-chevron-right"></i></button>
-                </div>
-            </div>
-
-            <!-- Informasi RT -->
-            <div class="about-info">
-                <span class="category" style="background: var(--primary-blue); color: white; padding: 6px 14px; border-radius: 20px; font-size: 12px;">RT 01 / RW 05</span>
-                <h3 style="margin-top: 15px; color: var(--primary-blue);">Bpk. Ahmad Subagja</h3>
-                
-                <p style="color: var(--dark-text); font-weight: 600; margin-bottom: 10px;">
-                    <i class="fa-solid fa-phone" style="color: var(--accent-red);"></i> Kontak: 0812-3456-7890
-                </p>
-                <p style="color: var(--text-muted); margin-bottom: 20px;">
-                    Masa Jabatan: 2024 - 2027<br>
-                    Cakupan Wilayah: Blok A1 - Blok A4 (50 Kepala Keluarga)
-                </p>
-
-                <h4 style="color: var(--dark-text); margin-bottom: 10px;">Program Kerja Utama:</h4>
-                <ul style="color: var(--text-muted); padding-left: 20px; margin-bottom: 25px; list-style-type: disc;">
-                    <li>Penataan Pos Kamling dan jadwal ronda malam digital.</li>
-                    <li>Pengelolaan kebersihan lingkungan dan pemilahan sampah.</li>
-                    <li>Pendataan ulang administrasi warga via aplikasi online.</li>
-                </ul>
+        <!-- Detail Card RT Dinamis (Dikeluarkan dari JS) -->
+        <div id="rtDetailCard" class="about-grid margin-bottom-30" style="background: white; padding: 30px; border-radius: var(--radius-lg); box-shadow: var(--shadow-md);">
+            <div style="text-align: center; width: 100%; padding: 40px 0;">
+                <i class="fa-solid fa-spinner fa-spin fa-2x" style="color: #007bff;"></i>
+                <p style="margin-top: 10px; color: #6c757d;">Memuat detail RT...</p>
             </div>
         </div>
 
@@ -75,9 +49,12 @@
 </main>
 
 <div id="footer"></div>
-
+<script src="js/api.js"></script>
 <script src="js/components.js"></script>
 <script src="js/app.js"></script>
+
+<!-- Tambahkan JS Detail RT -->
+<script src="js/detail-rt.js"></script>
 
 </body>
 </html>

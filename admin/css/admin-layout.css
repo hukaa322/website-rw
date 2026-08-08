@@ -1,20 +1,33 @@
 :root {
+    --primary-color: #00468B;
+    --primary-hover: #003366;
+    --accent-color: #FFC107;
+    --danger-color: #DC3545;
+    --danger-hover: #BB2D3B;
+    --bg-light: #F8FAFC;
+    --border-color: #E2E8F0;
+    --text-main: #0F172A;
+    --text-muted: #64748B;
     --sidebar-width: 250px;
     --footnav-height: 60px;
+    --radius: 8px;
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 body {
-    background-color: #F1F5F9;
+    background-color: var(--bg-light);
     display: flex;
     min-height: 100vh;
     font-family: 'Plus Jakarta Sans', sans-serif;
     margin: 0;
+    color: var(--text-main);
 }
 
 /* --- SIDEBAR NAVBAR (DESKTOP) --- */
 .admin-sidebar {
     width: var(--sidebar-width);
-    background: #00468B;
+    background: var(--primary-color);
     color: white;
     position: fixed;
     top: 0;
@@ -52,44 +65,47 @@ body {
     gap: 12px;
     padding: 12px 15px;
     color: #CBD5E1;
-    border-radius: 8px;
+    border-radius: var(--radius);
     font-weight: 600;
     font-size: 14px;
     text-decoration: none;
-    transition: all 0.25s ease;
+    transition: all 0.2s ease;
 }
 
 .admin-menu a:hover,
 .admin-menu a.active {
     background: rgba(255, 255, 255, 0.15);
-    color: #FFC107;
+    color: var(--accent-color);
 }
 
 .logout-btn {
     margin: 20px 15px;
     padding: 12px;
-    background: #DC3545;
+    background: var(--danger-color);
     color: white;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius);
     font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
+    transition: background 0.2s;
 }
+
+.logout-btn:hover { background: var(--danger-hover); }
 
 /* --- BOTTOM FOOTNAVBAR (HP) --- */
 .admin-footnavbar {
-    display: none; /* Sembunyikan di Desktop */
+    display: none;
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
     height: var(--footnav-height);
     background: #FFFFFF;
-    border-top: 1px solid #E2E8F0;
+    border-top: 1px solid var(--border-color);
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
     z-index: 1000;
     justify-content: space-around;
@@ -101,7 +117,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: #64748B;
+    color: var(--text-muted);
     text-decoration: none;
     font-size: 10px;
     font-weight: 600;
@@ -110,11 +126,17 @@ body {
 }
 
 .footnav-link i { font-size: 18px; }
+.footnav-link.active { color: var(--primary-color); font-weight: 800; }
 
-.footnav-link.active {
-    color: #00468B;
-    font-weight: 800;
+button.footnav-link.footnav-logout {
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: var(--danger-color);
 }
+
+button.footnav-link.footnav-logout:hover { color: var(--danger-hover); }
 
 /* --- DYNAMIC CONTENT CONTAINER --- */
 .admin-content {
@@ -123,30 +145,338 @@ body {
     padding: 30px;
 }
 
-/* --- RESPONSIVE MEDIA QUERIES FOR HP --- */
-@media (max-width: 768px) {
-    .admin-sidebar {
-        display: none; /* Sembunyikan Sidebar Desktop di HP */
-    }
-
-    .admin-footnavbar {
-        display: flex; /* Tampilkan Footnavbar Bottom di HP */
-    }
-
-    .admin-content {
-        margin-left: 0;
-        padding: 15px 15px 80px 15px; /* Tambah padding-bottom agar tidak tertutup Footnavbar */
-    }
+/* --- CRUD CARD & TABLE STYLES --- */
+.crud-card {
+    background: #FFFFFF;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-color);
 }
-/* Reset & Styling Khusus Tombol Logout di Footnavbar HP */
-button.footnav-link.footnav-logout {
+
+.crud-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.crud-header h3 { margin: 0; font-size: 18px; font-weight: 700; color: var(--text-main); }
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.admin-table th, .admin-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 14px;
+}
+
+.admin-table th {
+    background-color: #F1F5F9;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+/* --- BUTTON SYSTEM --- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary { background: var(--primary-color); color: #FFF; }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-secondary { background: #E2E8F0; color: var(--text-main); }
+.btn-secondary:hover { background: #CBD5E1; }
+.btn-sm { padding: 6px 12px; font-size: 13px; }
+
+/* --- MODAL FORM STYLING --- */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #FFFFFF;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 580px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #FAFBFD;
+}
+
+.modal-header h4 { margin: 0; font-size: 16px; font-weight: 700; }
+
+.btn-close-modal {
     background: transparent;
     border: none;
-    padding: 0;
+    font-size: 20px;
+    color: var(--text-muted);
     cursor: pointer;
-    color: #DC3545; /* Warna merah penanda logout */
 }
 
-button.footnav-link.footnav-logout:hover {
-    color: #BB2D3B;
+.modal-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.modal-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    background: #FAFBFD;
+}
+
+/* --- FORM CONTROLS & INPUTS --- */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.form-row {
+    display: flex;
+    gap: 16px;
+}
+
+.form-row .form-group { flex: 1; }
+
+.form-control {
+    width: 100%;
+    padding: 10px 14px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text-main);
+    background-color: #FFFFFF;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 70, 139, 0.15);
+}
+
+textarea.form-control { resize: vertical; min-height: 90px; }
+
+/* Custom Styling Input File */
+input[type="file"].form-control {
+    padding: 6px;
+    cursor: pointer;
+}
+
+input[type="file"].form-control::file-selector-button {
+    background: #F1F5F9;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-weight: 600;
+    font-size: 12px;
+    margin-right: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+input[type="file"].form-control::file-selector-button:hover {
+    background: #E2E8F0;
+}
+
+/* --- HEADER SECTION GALERI --- */
+.gallery-page-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.gallery-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0 0 6px 0;
+    letter-spacing: -0.5px;
+}
+
+.gallery-subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 0 0 20px 0;
+    font-style: italic;
+}
+
+/* --- PILL BUTTON FILTER (Gaya Kapsul) --- */
+.gallery-pill-filter {
+    display: inline-flex;
+    background: #FFFFFF;
+    padding: 6px;
+    border-radius: 50px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    gap: 6px;
+}
+
+.pill-btn {
+    padding: 8px 20px;
+    border-radius: 40px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pill-btn:hover {
+    color: var(--primary-color);
+    background: rgba(0, 70, 139, 0.05);
+}
+
+.pill-btn.active {
+    background: var(--primary-color);
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(0, 70, 139, 0.25);
+}
+
+/* --- HEADER ACTIONS & SEARCH BOX --- */
+.header-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.badge-count {
+    background: #F1F5F9;
+    color: var(--primary-color);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-box i {
+    position: absolute;
+    left: 12px;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.search-box input {
+    padding: 7px 12px 7px 34px;
+    font-size: 13px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    outline: none;
+    transition: all 0.2s;
+    width: 180px;
+}
+
+.search-box input:focus {
+    border-color: var(--primary-color);
+    width: 220px;
+    box-shadow: 0 0 0 3px rgba(0, 70, 139, 0.1);
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+    .crud-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .header-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .search-box input, .search-box input:focus {
+        width: 100%;
+    }
+    
+    .gallery-pill-filter {
+        width: 100%;
+        flex-wrap: wrap;
+        border-radius: 12px;
+    }
+    
+    .pill-btn {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+/* --- RESPONSIVE MEDIA QUERIES --- */
+@media (max-width: 768px) {
+    .admin-sidebar { display: none; }
+    .admin-footnavbar { display: flex; }
+    .admin-content { margin-left: 0; padding: 15px 15px 80px 15px; }
+    .form-row { flex-direction: column; gap: 16px; }
 }
