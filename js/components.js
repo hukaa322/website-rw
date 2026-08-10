@@ -1,61 +1,338 @@
 async function loadComponent(id, file) {
+
     try {
+
         const response = await fetch(file);
+
         if (!response.ok) {
             throw new Error(`${file} tidak ditemukan`);
         }
+
         const html = await response.text();
-        const element = document.getElementById(id);
+
+        const element =
+            document.getElementById(id);
+
         if (element) {
             element.innerHTML = html;
         }
+
     } catch (error) {
+
         console.error(error);
+
     }
+
 }
 
-window.addEventListener("DOMContentLoaded", async () => {
-    // Memuat komponen header & footer
-    await loadComponent("navbar", "components/navbar.html");
-    await loadComponent("bottom-nav", "components/bottom-nav.html");
-    await loadComponent("footer", "components/footer.html");
 
-    // Memuat section landing page
-    await loadComponent("hero", "pages/hero.html");
-    await loadComponent("tentang", "pages/tentang.html");
-    await loadComponent("profil-rt", "pages/profil-rt.html");
-    await loadComponent("profil-rw", "pages/profil-rw.html");
-    await loadComponent("berita", "pages/berita.html");
-    await loadComponent("galeri", "pages/galeri.html");
-    await loadComponent("layanan", "pages/layanan.html");
+/* =================================
+   SAAT WEBSITE DIBUKA
+================================= */
 
-    // Fitur Smooth Scroll dengan Offset Height Navbar
-    initSmoothScroll();
-});
+window.addEventListener(
+    "DOMContentLoaded",
+    async () => {
 
-function initSmoothScroll() {
-    document.addEventListener("click", (e) => {
-        const anchor = e.target.closest('a[href^="#"]');
-        if (anchor) {
-            const targetId = anchor.getAttribute("href");
-            if (targetId === "#") return;
+        /*
+         * LOAD NAVBAR
+         */
+        await loadComponent(
+            "navbar",
+            getComponentPath("navbar.html")
+        );
 
-            const targetElement = document.querySelector(targetId);
-            if (targetElement) {
-                e.preventDefault();
-                const navbarHeight = 75; // Sesuaikan dengan tinggi navbar
-                const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
-                const offsetPosition = elementPosition - navbarHeight;
 
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: "smooth"
-                });
+        /*
+         * LOAD FOOTER
+         */
+        await loadComponent(
+            "footer",
+            getComponentPath("footer.html")
+        );
 
-                // Update class active pada link yang diklik
-                document.querySelectorAll('.nav-desktop a, .bottom-nav .nav-item').forEach(nav => nav.classList.remove('active'));
-                anchor.classList.add('active');
+
+        /*
+         * INIT HAMBURGER
+         */
+        initHamburgerMenu();
+
+
+        /*
+         * ATUR LINK HALAMAN
+         */
+        initPageNavigation();
+
+    }
+);
+
+
+/* =================================
+   MENENTUKAN PATH COMPONENT
+================================= */
+
+function getComponentPath(file) {
+
+    const isInsidePages =
+        window.location.pathname
+            .includes("/pages/");
+
+    if (isInsidePages) {
+
+        return `../components/${file}`;
+
+    }
+
+    return `components/${file}`;
+
+}
+
+
+/* =================================
+   NAVIGASI HALAMAN
+================================= */
+
+function initPageNavigation() {
+
+    const isInsidePages =
+        window.location.pathname
+            .includes("/pages/");
+
+
+    const homePath =
+        isInsidePages
+            ? "../index.html"
+            : "index.html";
+
+
+    const pagePath =
+        isInsidePages
+            ? "../pages/"
+            : "pages/";
+
+
+    /*
+     * HOME
+     */
+
+    const homeLink =
+        document.getElementById("homeLink");
+
+    if (homeLink) {
+        homeLink.href = homePath;
+    }
+
+
+    /*
+     * SEMUA MENU
+     */
+
+    document
+        .querySelectorAll(".hamburger-item")
+        .forEach(item => {
+
+            const page =
+                item.dataset.page;
+
+
+            if (page === "home") {
+
+                item.href = homePath;
+
+            } else {
+
+                item.href =
+                    `${pagePath}${page}.html`;
+
             }
+
+
+            /*
+             * Tandai halaman aktif
+             */
+
+            const currentPage =
+                window.location.pathname
+                    .split("/")
+                    .pop();
+
+
+            const targetPage =
+                page === "home"
+                    ? "index.html"
+                    : `${page}.html`;
+
+
+            if (currentPage === targetPage) {
+
+                item.classList.add("active");
+
+            } else {
+
+                item.classList.remove("active");
+
+            }
+
+        });
+
+}
+
+
+/* =================================
+   HAMBURGER MENU
+================================= */
+
+function initHamburgerMenu() {
+
+    const hamburgerBtn =
+        document.getElementById(
+            "hamburgerBtn"
+        );
+
+    const hamburgerMenu =
+        document.getElementById(
+            "hamburgerMenu"
+        );
+
+    const menuOverlay =
+        document.getElementById(
+            "menuOverlay"
+        );
+
+
+    if (
+        !hamburgerBtn ||
+        !hamburgerMenu ||
+        !menuOverlay
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+     * BUKA / TUTUP
+     */
+
+    hamburgerBtn.addEventListener(
+        "click",
+        () => {
+
+            const isOpen =
+                hamburgerMenu.classList.toggle(
+                    "active"
+                );
+
+            menuOverlay.classList.toggle(
+                "active",
+                isOpen
+            );
+
+
+            hamburgerBtn.setAttribute(
+                "aria-expanded",
+                isOpen
+            );
+
+
+            const icon =
+                hamburgerBtn.querySelector("i");
+
+
+            if (icon) {
+
+                if (isOpen) {
+
+                    icon.classList.remove(
+                        "fa-bars"
+                    );
+
+                    icon.classList.add(
+                        "fa-xmark"
+                    );
+
+                } else {
+
+                    icon.classList.remove(
+                        "fa-xmark"
+                    );
+
+                    icon.classList.add(
+                        "fa-bars"
+                    );
+
+                }
+
+            }
+
         }
-    });
+    );
+
+
+    /*
+     * KLIK OVERLAY
+     */
+
+    menuOverlay.addEventListener(
+        "click",
+        closeMenu
+    );
+
+
+    /*
+     * KLIK MENU
+     */
+
+    document
+        .querySelectorAll(".hamburger-item")
+        .forEach(item => {
+
+            item.addEventListener(
+                "click",
+                () => {
+
+                    closeMenu();
+
+                }
+            );
+
+        });
+
+
+    function closeMenu() {
+
+        hamburgerMenu.classList.remove(
+            "active"
+        );
+
+        menuOverlay.classList.remove(
+            "active"
+        );
+
+
+        hamburgerBtn.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+
+        const icon =
+            hamburgerBtn.querySelector("i");
+
+
+        if (icon) {
+
+            icon.classList.remove(
+                "fa-xmark"
+            );
+
+            icon.classList.add(
+                "fa-bars"
+            );
+
+        }
+
+    }
+
 }

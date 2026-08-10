@@ -1,17 +1,59 @@
-<section class="news" id="berita">
-    <div class="container">
-        <div class="section-header">
-            <h2 class="section-title">Pengumuman & Berita</h2>
-            <p class="section-subtitle">"Kabar Terbaru dan Informasi Penting Seputar Vireta 2"</p>
-        </div>
+<!DOCTYPE html>
+<html lang="id">
 
-        <!-- Wadah Data Berita dari Database -->
-        <div id="newsContainer" class="news-grid"></div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Berita & Pengumuman - Vireta 2</title>
 
-        <div class="text-center margin-top-40">
-            <a href="berita-lengkap.html" class="btn btn-outline">
-                <i class="fa-solid fa-newspaper"></i> Arsip Berita Selengkapnya
-            </a>
-        </div>
-    </div>
-</section>
+    <!-- FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- FONT AWESOME -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/navbar.css">
+    <link rel="stylesheet" href="../css/hero.css">
+    <link rel="stylesheet" href="../css/cards.css">
+    <link rel="stylesheet" href="../css/admin.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/style-landing.css">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <div id="navbar"></div>
+
+    <main>
+        <section class="news section-padding" id="berita">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Pengumuman & Berita</h2>
+                    <p class="section-subtitle">"Kabar Terbaru dan Informasi Penting Seputar Vireta 2"</p>
+                </div>
+
+                <!-- Wadah Data Berita dari Database -->
+                <div id="newsContainer" class="news-grid"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <div id="footer"></div>
+
+    <!-- JS -->
+    <script src="../js/api.js"></script>
+    <script src="../js/components.js"></script>
+    <script src="../js/darkmode.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/landing-berita.js"></script>
+
+</body>
+
+</html>

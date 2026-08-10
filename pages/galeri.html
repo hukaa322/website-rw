@@ -1,27 +1,67 @@
-<section class="gallery" id="galeri">
-    <div class="container">
-        <div class="section-header">
-            <h2 class="section-title">Galeri Warga & UMKM</h2>
-            <p class="section-subtitle">"Daya Cipta, Usaha Lokal, dan Kebersamaan Warga Vireta 2"</p>
-        </div>
+<!DOCTYPE html>
+<html lang="id">
 
-        <!-- Tombol Tab Filter Kategori -->
-        <div class="gallery-tabs text-center margin-bottom-30">
-            <button class="gallery-tab-btn active" data-category="semua">Semua</button>
-            <button class="gallery-tab-btn" data-category="umkm">UMKM</button>
-            <button class="gallery-tab-btn" data-category="kegiatan">Kegiatan</button>
-            <button class="gallery-tab-btn" data-category="warga">Ikon Warga</button>
-        </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeri Warga & UMKM - Vireta 2</title>
 
-        <!-- Container Grid Galeri -->
-        <div id="galleryContainer" class="gallery-grid">
-            <!-- Content akan di-render dinamis oleh JavaScript -->
-        </div>
+    <!-- FONT -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-        <div class="text-center margin-top-40">
-            <a href="galeri.html" class="btn btn-primary">
-                <i class="fa-solid fa-images"></i> Lihat Seluruh Galeri & UMKM
-            </a>
-        </div>
-    </div>
-</section>
+    <!-- FONT AWESOME -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../css/reset.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/navbar.css">
+    <link rel="stylesheet" href="../css/cards.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="../css/style-landing.css">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <div id="navbar"></div>
+
+    <main>
+        <section class="gallery section-padding" id="galeri">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title">Galeri Warga & UMKM</h2>
+                    <p class="section-subtitle">"Daya Cipta, Usaha Lokal, dan Kebersamaan Warga Vireta 2"</p>
+                </div>
+
+                <!-- Tombol Tab Filter Kategori -->
+                <div class="gallery-tabs text-center margin-bottom-30">
+                    <button class="gallery-tab-btn active" data-category="semua">Semua</button>
+                    <button class="gallery-tab-btn" data-category="umkm">UMKM</button>
+                    <button class="gallery-tab-btn" data-category="kegiatan">Kegiatan</button>
+                    <button class="gallery-tab-btn" data-category="warga">Ikon Warga</button>
+                </div>
+
+                <!-- Container Grid Galeri -->
+                <div id="galleryContainer" class="gallery-grid">
+                    <!-- Content akan di-render dinamis oleh JavaScript -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FOOTER -->
+    <div id="footer"></div>
+
+    <!-- JS -->
+    <script src="../js/api.js"></script>
+    <script src="../js/components.js"></script>
+    <script src="../js/darkmode.js"></script>
+    <script src="../js/app.js"></script>
+    <script src="../js/galeri.js"></script>
+
+</body>
+
+</html>

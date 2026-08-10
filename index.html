@@ -1,49 +1,284 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vireta 2 - Villa Regensi Tangerang 2</title> 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <link rel="stylesheet" href="css/reset.css">
-    <link rel="stylesheet" href="css/layout.css">
-    <link rel="stylesheet" href="css/navbar.css">
-    <link rel="stylesheet" href="css/sidebar.css">
-    <link rel="stylesheet" href="css/hero.css">
-    <link rel="stylesheet" href="css/cards.css">
-    <link rel="stylesheet" href="css/admin.css">
-    <link rel="stylesheet" href="css/responsive.css">
-    <link rel="stylesheet" href="css/style-landing.css">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Vireta 2 - Villa Regensi Tangerang 2
+    </title>
+
+
+    <!-- FONT -->
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- FONT AWESOME -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+    >
+
+
+    <!-- CSS -->
+
+    <link
+        rel="stylesheet"
+        href="css/reset.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/layout.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/navbar.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/hero.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/cards.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/admin.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/responsive.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/style-landing.css"
+    >
+
 </head>
+
+
 <body>
 
-<div id="navbar"></div>
-<div id="bottom-nav"></div>
 
-<main>
-    <div id="hero"></div>
-    <div id="tentang"></div>
-    <div id="profil-rt"></div>
-    <div id="profil-rw"></div>
-    <div id="berita"></div>
-    <div id="galeri"></div>
-    <div id="layanan"></div>
-</main>
+    <!-- NAVBAR -->
 
-<div id="footer"></div>
-<script src="js/api.js"></script>
-<script src="js/components.js"></script>
-<script src="js/darkmode.js"></script>
-<script src="js/app.js"></script>
-<script src="js/layanan.js"></script>
-<script src="js/profile-rt.js"></script>
-<script src="js/detail-rw.js"></script>
-<script src="js/landing-berita.js"></script>
-<script src="js/galeri.js"></script>
-<script src="js/layanan-landing.js"></script>
+    <div id="navbar"></div>
+
+
+    <!-- BERANDA -->
+
+    <main>
+
+        <section class="hero" id="hero">
+
+            <div class="container">
+
+                <div class="hero-content">
+
+                    <div class="hero-badge">
+
+                        <i class="fa-solid fa-map-location-dot"></i>
+
+                        Website Resmi Perumahan Vireta 2
+
+                    </div>
+
+
+                    <h1 class="hero-title">
+
+                        Membangun
+
+                        <span>Vireta 2</span>
+
+                        <br>
+
+                        Yang Harmonis, Aman, & Digital
+
+                    </h1>
+
+
+                    <p class="hero-desc">
+
+                        "Bersama Mewujudkan Lingkungan Asri,
+                        Aman, dan Berteknologi untuk
+                        Kesejahteraan Warga Villa Regensi Tangerang 2."
+
+                    </p>
+
+
+                    <div class="hero-buttons">
+
+                        <a
+                            href="pages/berita.html"
+                            class="btn btn-primary"
+                        >
+
+                            <i class="fa-solid fa-newspaper"></i>
+
+                            Pengumuman
+
+                        </a>
+
+
+                        <a
+                            href="pages/tentang.html"
+                            class="btn btn-outline"
+                        >
+
+                            <i class="fa-solid fa-circle-info"></i>
+
+                            Selengkapnya
+
+                        </a>
+
+                    </div>
+
+
+                    <div class="hero-stats">
+
+                        <div class="stat">
+
+                            <h2>8</h2>
+
+                            <p>RT Aktif</p>
+
+                        </div>
+
+
+                        <div class="stat">
+
+                            <h2>450+</h2>
+
+                            <p>Kepala Keluarga</p>
+
+                        </div>
+
+
+                        <div class="stat">
+
+                            <h2>24/7</h2>
+
+                            <p>Keamanan</p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="hero-image">
+
+                    <div class="slider-wrapper">
+
+                        <img
+                            src="assets/img/hero-1.jpg"
+                            alt="Vireta 2 Slide 1"
+                            class="slide-img active"
+                        >
+
+                        <img
+                            src="assets/img/hero-2.jpg"
+                            alt="Vireta 2 Slide 2"
+                            class="slide-img"
+                        >
+
+                        <div class="slider-controls">
+
+                            <button class="prev-slide">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </button>
+
+                            <button class="next-slide">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="floating-card">
+
+                        <i class="fa-solid fa-handshake-angle"></i>
+
+                        <div>
+
+                            <strong>Rukun Warga</strong>
+
+                            <p>Aktif & Terbuka</p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+
+    <div id="footer"></div>
+
+
+    <!-- JS -->
+
+    <script src="js/api.js"></script>
+
+    <script src="js/components.js"></script>
+
+    <script src="js/darkmode.js"></script>
+
+    <script src="js/app.js"></script>
+
+    <script src="js/layanan.js"></script>
+
+    <script src="js/profile-rt.js"></script>
+
+    <script src="js/detail-rw.js"></script>
+
+    <script src="js/landing-berita.js"></script>
+
+    <script src="js/galeri.js"></script>
+
+    <script src="js/layanan-landing.js"></script>
+
 
 </body>
+
 </html>

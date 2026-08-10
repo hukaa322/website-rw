@@ -1,27 +1,84 @@
 <header class="navbar">
     <div class="container">
+
+        <!-- Logo + Nama Website -->
         <div class="nav-left">
-            <img src="assets/img/logo.png" alt="Logo Vireta 2" class="logo">
+            <img
+                src="assets/img/logo.png"
+                alt="Logo Vireta 2"
+                class="logo"
+            >
+
             <h2 class="site-title">VIRETA 2</h2>
         </div>
 
-        <!-- Menu Navigasi Desktop (Anchor Links) -->
-        <nav class="nav-desktop">
-            <ul>
-                <li><a href="#hero" class="active"><i class="fa-solid fa-house"></i> Beranda</a></li>
-                <li><a href="#tentang"><i class="fa-solid fa-circle-info"></i> Tentang</a></li>
-                <li><a href="#profil-rt"><i class="fa-solid fa-users-gear"></i> Profil RT</a></li>
-                <li><a href="#profil-rw"><i class="fa-solid fa-sitemap"></i> Profil RW</a></li>
-                <li><a href="#berita"><i class="fa-solid fa-newspaper"></i> Berita</a></li>
-                <li><a href="#galeri"><i class="fa-solid fa-images"></i> Galeri</a></li>
-                <li><a href="#layanan"><i class="fa-solid fa-file-lines"></i> Layanan</a></li>
-            </ul>
-        </nav>
-
+        <!-- Tombol Hamburger -->
         <div class="nav-right">
-            <button class="icon-btn" id="themeToggle" aria-label="Ubah Tema">
+
+            <button
+                class="icon-btn hamburger-btn"
+                id="hamburgerBtn"
+                aria-label="Buka Menu"
+                aria-expanded="false"
+            >
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+            <button
+                class="icon-btn"
+                id="themeToggle"
+                aria-label="Ubah Tema"
+            >
                 <i class="fa-solid fa-moon"></i>
             </button>
+
         </div>
     </div>
+
+    <!-- Hamburger Menu -->
+<!-- Hamburger Menu -->
+<div class="hamburger-menu" id="hamburgerMenu">
+    <nav class="hamburger-nav">
+
+        <a href="#" class="hamburger-item" data-page="home">
+            <i class="fa-solid fa-house"></i>
+            <span>Beranda</span>
+        </a>
+
+        <a href="#" class="hamburger-item" data-page="tentang">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>Tentang</span>
+        </a>
+
+        <a href="#" class="hamburger-item" data-page="profil-rt">
+            <i class="fa-solid fa-users-gear"></i>
+            <span>Profil RT</span>
+        </a>
+
+        <a href="#" class="hamburger-item" data-page="profil-rw">
+            <i class="fa-solid fa-sitemap"></i>
+            <span>Profil RW</span>
+        </a>
+
+        <a href="#" class="hamburger-item" data-page="berita">
+            <i class="fa-solid fa-newspaper"></i>
+            <span>Berita</span>
+        </a>
+
+        <a href="#" class="hamburger-item" data-page="galeri">
+            <i class="fa-solid fa-images"></i>
+            <span>Galeri</span>
+        </a>
+
+        <a href="#" class="hamburger-item" data-page="layanan">
+            <i class="fa-solid fa-file-lines"></i>
+            <span>Layanan</span>
+        </a>
+
+    </nav>
+</div>
+
+    <!-- Overlay -->
+    <div class="menu-overlay" id="menuOverlay"></div>
+
 </header>
