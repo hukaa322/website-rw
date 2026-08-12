@@ -157,3 +157,62 @@ function formatPhone(phone) {
     }
     return phone;
 }
+
+async function fetchLandingRt() {
+    const rtContainer = document.getElementById("rtContainer");
+    if (!rtContainer) return; // Keluar jika bukan di index.html
+
+    // Tampilkan Spinner/Loading
+    rtContainer.innerHTML = `
+        <div style="text-align: center; padding: 30px 0; grid-column: 1 / -1;">
+            <i class="fa-solid fa-spinner fa-spin fa-2x" style="color: #007bff;"></i>
+            <p style="margin-top: 10px; color: #6c757d;">Memuat profil RT...</p>
+        </div>
+    `;
+
+    try {
+        const fetcher = typeof window.apiFetch === "function" ? window.apiFetch : fetch;
+        const targetUrl = (window.API && window.API.RT) ? window.API.RT.GET_ALL : "http://localhost:3000/api/admin/rt";
+
+        const response = await fetcher(targetUrl);
+        const result = await response.json();
+
+        if (result.success && Array.isArray(result.data) && result.data.length > 0) {
+            rtContainer.innerHTML = ""; // Bersihkan loading
+
+            result.data.forEach(item => {
+                const noRt = String(item.nomor_rt).padStart(2, '0');
+                
+                // Gambar/Foto
+                const foto = item.foto_utama 
+                    ? `assets/galery/rt/${item.foto_utama}` 
+                    : `assets/img/default-avatar.png`;
+
+                const rtCardHtml = `
+                    <div class="rt-card" style="background: white; border-radius: 12px; padding: 20px; box-shadow: var(--shadow-sm, 0 2px 4px rgba(0,0,0,0.1)); text-align: center;">
+                        <img src="${foto}" 
+                             alt="Ketua RT ${noRt}" 
+                             style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; margin: 0 auto 15px; border: 3px solid var(--primary-blue, #007bff);"
+                             onerror="this.onerror=null; this.src='assets/img/default-avatar.png';">
+                        <span style="background: var(--primary-blue, #007bff); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;">
+                            RT ${noRt}
+                        </span>
+                        <h3 style="margin: 10px 0 5px; color: #2d3748; font-size: 18px;">${item.nama_ketua || 'Belum diisi'}</h3>
+                        <p style="color: #718096; font-size: 13px; margin-bottom: 15px;">
+                            <i class="fa-solid fa-phone" style="color: #e53e3e;"></i> ${item.nomor_telepon || '-'}
+                        </p>
+                        <a href="detail-rt.html?id=${item.id}" class="btn btn-outline" style="display: inline-block; padding: 8px 16px; border: 1px solid #007bff; color: #007bff; border-radius: 6px; text-decoration: none; font-size: 13px;">
+                            Lihat Profil
+                        </a>
+                    </div>
+                `;
+                rtContainer.insertAdjacentHTML("beforeend", rtCardHtml);
+            });
+        } else {
+            rtContainer.innerHTML = `<p style="text-align: center; color: #718096; grid-column: 1 / -1;">Belum ada data RT yang tersedia.</p>`;
+        }
+    } catch (err) {
+        console.error(">>> [ERROR LANDING RT]:", err);
+        rtContainer.innerHTML = `<p style="text-align: center; color: #e53e3e; grid-column: 1 / -1;">Gagal memuat data RT.</p>`;
+    }
+}

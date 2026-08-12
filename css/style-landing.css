@@ -4,6 +4,7 @@
    ========================================================================== */
 
 :root {
+    /* Light Mode (Default) */
     --primary-blue: #00468B;
     --primary-blue-dark: #003163;
     --accent-yellow: #FFC107;
@@ -15,6 +16,8 @@
     --light-bg: #FFFFFF;
     --section-bg: #F8FAFC;
     --border-color: #E2E8F0;
+    --card-bg: #FFFFFF;
+
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 20px;
@@ -22,19 +25,34 @@
     --shadow-md: 0 10px 30px rgba(0, 70, 139, 0.08);
 }
 
+/* --- DARK MODE OVERRIDES --- */
+[data-theme="dark"] {
+    --primary-blue: #3B82F6;         /* Biru lebih terang agar kontras di mode gelap */
+    --primary-blue-dark: #1D4ED8;
+    --dark-text: #F1F5F9;            /* Teks utama jadi putih/terang */
+    --text-muted: #94A3B8;           /* Teks sekunder abu-abu terang */
+    --light-bg: #0F172A;             /* Background utama sangat gelap */
+    --section-bg: #1E293B;           /* Background section sedikit lebih terang */
+    --card-bg: #1E293B;              /* Card background */
+    --border-color: #334155;          /* Garis pembatas gelap */
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
 /* =========================================
    1. GLOBAL RESET & UTILITIES
 ========================================= */
 html {
     scroll-behavior: smooth;
-    scroll-padding-top: 85px; /* Offset scroll agar tidak tertutup Navbar */
+    scroll-padding-top: 85px;
 }
 
 body {
     font-family: 'Plus Jakarta Sans', sans-serif;
-    background-color: var(--section-bg);
+    background-color: var(--light-bg);
     color: var(--dark-text);
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .section-padding {
@@ -97,6 +115,25 @@ body {
     border-radius: var(--radius-sm);
 }
 
+/* Tombol Toggle Dark Mode */
+.btn-theme-toggle {
+    background: transparent;
+    border: none;
+    color: var(--dark-text);
+    font-size: 18px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: color 0.3s ease, transform 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-theme-toggle:hover {
+    transform: scale(1.1);
+}
+
 /* =========================================
    3. SLIDER COMPONENTS (GLOBAL PLACEHOLDER)
 ========================================= */
@@ -112,15 +149,14 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    display: none; /* Sembunyikan semua gambar default */
+    display: none;
     transition: opacity 0.4s ease-in-out;
 }
 
 .slide-img.active {
-    display: block; /* Hanya gambar aktif yang tampil */
+    display: block;
 }
 
-/* Tombol Kontrol Slider Navigasi */
 .slider-controls {
     position: absolute;
     top: 50%;
@@ -136,9 +172,9 @@ body {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.85);
+    background: var(--card-bg);
     color: var(--primary-blue);
-    border: none;
+    border: 1px solid var(--border-color);
     cursor: pointer;
     pointer-events: auto;
     display: flex;
@@ -195,7 +231,7 @@ body {
 }
 
 /* =========================================
-   6. RESPONSIVE MEDIA QUERIES (MOBILE FIX)
+   6. RESPONSIVE MEDIA QUERIES
 ========================================= */
 @media (max-width: 992px) {
     .about-grid {
@@ -208,12 +244,7 @@ body {
         padding: 45px 0;
     }
 
-    /* Penyesuaian Tinggi Slider di Layar HP */
-    .about-slider {
-        height: 220px;
-    }
-
-    .rw-slider {
+    .about-slider, .rw-slider {
         height: 220px;
     }
 
@@ -221,26 +252,27 @@ body {
         height: 160px;
     }
 
-    /* Bottom Nav Padding Fix */
     main {
         padding-bottom: 80px;
     }
 }
 
 /* =========================================
-   GALLERY TAB FILTER STYLES
+   GALLERY & LAYANAN TAB FILTER STYLES
 ========================================= */
-.gallery-tabs {
+.gallery-tabs,
+.layanan-tabs {
     display: flex;
     justify-content: center;
     gap: 12px;
     flex-wrap: wrap;
 }
 
-.gallery-tab-btn {
+.gallery-tab-btn,
+.layanan-tab-btn {
     padding: 10px 22px;
     border-radius: 50px;
-    background: #FFFFFF;
+    background: var(--card-bg);
     color: var(--dark-text);
     border: 2px solid var(--border-color);
     font-weight: 700;
@@ -250,35 +282,7 @@ body {
 }
 
 .gallery-tab-btn:hover,
-.gallery-tab-btn.active {
-    background: var(--primary-blue);
-    color: #FFFFFF;
-    border-color: var(--primary-blue);
-    box-shadow: 0 4px 12px rgba(0, 70, 139, 0.2);
-}
-
-/* =========================================
-   LAYANAN TAB FILTER STYLES
-========================================= */
-.layanan-tabs {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.layanan-tab-btn {
-    padding: 10px 22px;
-    border-radius: 50px;
-    background: #FFFFFF;
-    color: var(--dark-text);
-    border: 2px solid var(--border-color);
-    font-weight: 700;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.25s ease;
-}
-
+.gallery-tab-btn.active,
 .layanan-tab-btn:hover,
 .layanan-tab-btn.active {
     background: var(--primary-blue);
@@ -286,7 +290,8 @@ body {
     border-color: var(--primary-blue);
     box-shadow: 0 4px 12px rgba(0, 70, 139, 0.2);
 }
-/* --- GRID LAYANAN LANDING --- */
+
+/* --- GRID & CARD LAYANAN LANDING --- */
 .layanan-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -294,12 +299,12 @@ body {
     margin-top: 20px;
 }
 
-/* --- CARD LAYANAN --- */
 .layanan-card {
-    background: #FFFFFF;
+    background: var(--card-bg);
+    color: var(--dark-text);
     border-radius: 12px;
-    border: 1px solid #E2E8F0;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -308,13 +313,13 @@ body {
 
 .layanan-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
 }
 
 .card-image-wrapper {
     width: 100%;
     height: 180px;
-    background-color: #F8FAFC;
+    background-color: var(--section-bg);
     overflow: hidden;
 }
 
@@ -346,25 +351,25 @@ body {
 }
 
 .badge-category {
-    background-color: #E0F2FE;
-    color: #0369A1;
+    background-color: rgba(59, 130, 246, 0.15);
+    color: var(--primary-blue);
 }
 
 .badge-target {
-    background-color: #F1F5F9;
-    color: #475569;
+    background-color: var(--section-bg);
+    color: var(--text-muted);
 }
 
 .card-title {
     font-size: 16px;
     font-weight: 700;
-    color: #0F172A;
+    color: var(--dark-text);
     margin: 0 0 8px 0;
 }
 
 .card-description {
     font-size: 13px;
-    color: #64748B;
+    color: var(--text-muted);
     line-height: 1.5;
     margin: 0 0 20px 0;
     flex: 1;
@@ -389,4 +394,181 @@ body {
 .btn-wa:hover {
     background-color: #1DA851;
     color: #FFFFFF;
+}
+
+/* ==========================================================================
+   DARK MODE ADJUSTMENTS UNTUK HERO, SECTION, & COMPONENT
+   ========================================================================== */
+
+/* --- HERO SECTION & FLOATING CARD --- */
+.hero {
+    background: var(--light-bg);
+    color: var(--dark-text);
+}
+
+.hero-badge {
+    background: var(--section-bg);
+    color: var(--primary-blue);
+    border: 1px solid var(--border-color);
+}
+
+.hero-title {
+    color: var(--dark-text);
+}
+
+.hero-title span {
+    color: var(--primary-blue);
+}
+
+.hero-desc {
+    color: var(--text-muted);
+}
+
+.hero-stats .stat h2 {
+    color: var(--primary-blue);
+}
+
+.hero-stats .stat p {
+    color: var(--text-muted);
+}
+
+.floating-card {
+    background: var(--card-bg);
+    color: var(--dark-text);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+}
+
+.floating-card i {
+    color: var(--primary-blue);
+}
+
+.floating-card p {
+    color: var(--text-muted);
+}
+
+/* --- SECTION HEADERS & SUBTITLES --- */
+.section-title {
+    color: var(--dark-text);
+}
+
+.section-subtitle {
+    color: var(--text-muted);
+}
+
+/* --- PILL FILTER & BUTTONS LAYANAN / GALERI --- */
+.gallery-pill-filter {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.pill-btn {
+    padding: 8px 18px;
+    border-radius: 50px;
+    background: var(--card-bg);
+    color: var(--dark-text);
+    border: 1px solid var(--border-color);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.pill-btn i {
+    color: var(--primary-blue);
+}
+
+.pill-btn:hover,
+.pill-btn.active {
+    background: var(--primary-blue);
+    color: #FFFFFF;
+    border-color: var(--primary-blue);
+}
+
+.pill-btn:hover i,
+.pill-btn.active i {
+    color: #FFFFFF;
+}
+
+/* --- LOADING & SPINNER STATES --- */
+.loading-text {
+    color: var(--text-muted);
+}
+
+.spinner-icon {
+    color: var(--primary-blue);
+}
+
+/* ==========================================================================
+   CSS DARK MODE OVERRIDE (VIRETA 2)
+   ========================================================================== */
+
+/* Pastikan selector ini mencakup html / :root */
+:root[data-theme="dark"],
+html[data-theme="dark"] {
+    --primary-blue: #3B82F6 !important;
+    --primary-blue-dark: #1D4ED8 !important;
+    --dark-text: #F1F5F9 !important;
+    --text-muted: #94A3B8 !important;
+    --light-bg: #0F172A !important;
+    --section-bg: #1E293B !important;
+    --card-bg: #1E293B !important;
+    --border-color: #334155 !important;
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+    --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Force Reset Background Body & Main Elements */
+[data-theme="dark"] body,
+[data-theme="dark"] main,
+[data-theme="dark"] section {
+    background-color: var(--light-bg) !important;
+    color: var(--dark-text) !important;
+}
+
+/* Force Card & Box Components agar tidak terkunci warna putih */
+[data-theme="dark"] .card,
+[data-theme="dark"] .news-card,
+[data-theme="dark"] .gallery-card,
+[data-theme="dark"] .layanan-card,
+[data-theme="dark"] .rt-card,
+[data-theme="dark"] .rw-card,
+[data-theme="dark"] .floating-card {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+    color: var(--dark-text) !important;
+}
+
+/* Headings & Text Overrides */
+[data-theme="dark"] h1, 
+[data-theme="dark"] h2, 
+[data-theme="dark"] h3, 
+[data-theme="dark"] h4, 
+[data-theme="dark"] .section-title,
+[data-theme="dark"] .card-title {
+    color: var(--dark-text) !important;
+}
+
+[data-theme="dark"] p,
+[data-theme="dark"] .section-subtitle,
+[data-theme="dark"] .card-description {
+    color: var(--text-muted) !important;
+}
+
+/* Tab & Pill Button Filter */
+[data-theme="dark"] .gallery-tab-btn,
+[data-theme="dark"] .layanan-tab-btn,
+[data-theme="dark"] .pill-btn {
+    background-color: var(--card-bg) !important;
+    color: var(--dark-text) !important;
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .gallery-tab-btn.active,
+[data-theme="dark"] .layanan-tab-btn.active,
+[data-theme="dark"] .pill-btn.active {
+    background-color: var(--primary-blue) !important;
+    color: #FFFFFF !important;
 }
