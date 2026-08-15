@@ -1,10 +1,27 @@
-<section id="profil-rt" class="section-padding">
+<section id="profil-rt" class="section-padding rt-section">
     <div class="container">
-        <div class="section-header">
+        <div class="section-header text-center">
+            <span class="rt-pill-badge">
+                <i class="fa-solid fa-users"></i> Wilayah Pelayanan
+            </span>
             <h2 class="section-title">Profil RT Aktif</h2>
-            <p class="section-subtitle">"Garda Terdepan Pelayanan dan Keharmonisan Warga"</p>
+            <p class="section-subtitle">"Garda Terdepan Pelayanan dan Keharmonisan Warga RW 05"</p>
         </div>
 
-        <div id="rtContainer" class="rt-grid"></div>
+        <!-- Carousel Track Wrapper -->
+        <div class="rt-carousel-viewport" id="rtCarouselViewport">
+            <div id="rtContainer" class="rt-track"></div>
+        </div>
+
+        <!-- Indikator & Kontrol Opsional -->
+        <div class="rt-carousel-controls">
+            <button class="rt-nav-btn" id="rtPrevBtn" aria-label="Sebelumnya">
+                <i class=""></i>
+            </button>
+            <div class="rt-dots" id="rtDots"></div>
+            <button class="rt-nav-btn" id="rtNextBtn" aria-label="Selanjutnya">
+                <i class=""></i>
+            </button>
+        </div>
     </div>
 </section>

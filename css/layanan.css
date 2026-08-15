@@ -1,0 +1,198 @@
+/* ===================================================
+   LAYOUTING SECTION LAYANAN WARGA (RESPONSIVE)
+   =================================================== */
+
+.layanan-wrapper-layout {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 28px;
+  align-items: start;
+  width: 100%;
+}
+
+/* Card Box Utama (Form) */
+.layanan-form-box {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.layanan-form-header {
+  margin-bottom: 20px;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 14px;
+}
+
+.layanan-form-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.layanan-form-subtitle {
+  color: #64748b;
+  font-size: 0.875rem;
+  margin-top: 5px;
+  margin-bottom: 0;
+}
+
+/* Form Controls */
+.form-group-layanan {
+  margin-bottom: 16px;
+}
+
+.form-group-layanan label {
+  display: block;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.form-group-layanan .required-dot {
+  color: #ef4444;
+}
+
+.form-control-custom {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  color: #1e293b;
+  background-color: #f8fafc;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.form-control-custom:focus {
+  background-color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+/* Tombol Submit WhatsApp */
+.btn-submit-wa {
+  width: 100%;
+  padding: 14px 18px;
+  background: #16a34a;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+  transition: all 0.2s ease;
+}
+
+.btn-submit-wa:hover {
+  background: #15803d;
+  transform: translateY(-1px);
+}
+
+/* Kolom Kanan (Quick Cards) */
+.quick-cards-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.quick-card-item {
+  border-radius: 14px;
+  padding: 20px;
+  transition: transform 0.2s ease;
+}
+
+.quick-card-item:hover {
+  transform: translateY(-2px);
+}
+
+.quick-card-item.security {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.quick-card-item.health {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+
+.quick-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.quick-card-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #1e293b;
+  margin: 0;
+}
+
+.quick-card-desc {
+  font-size: 0.875rem;
+  color: #475569;
+  line-height: 1.5;
+  margin: 0 0 14px 0;
+}
+
+.btn-quick-wa {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.btn-quick-wa:hover {
+  opacity: 0.9;
+}
+
+.btn-quick-security {
+  background: #dc2626;
+}
+
+.btn-quick-health {
+  background: #16a34a;
+}
+
+/* ===================================================
+   RESPONSIVE BREAKPOINTS (Mobile & Tablet)
+   =================================================== */
+
+@media (max-width: 992px) {
+  .layanan-wrapper-layout {
+    grid-template-columns: 1fr; /* Jadi 1 Kolom ke bawah */
+    gap: 24px;
+  }
+}
+
+@media (max-width: 576px) {
+  .layanan-form-box {
+    padding: 18px;
+  }
+  
+  .btn-submit-wa {
+    font-size: 0.9rem;
+    padding: 12px;
+  }
+}

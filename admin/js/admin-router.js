@@ -61,8 +61,10 @@ function initPageEvents(hash) {
         if (window.LayananModule && typeof window.LayananModule.init === "function") {
             window.LayananModule.init();
         }
-    } else if (hash === "#/galeri") {
-        if (typeof window.loadGaleriData === "function") {
+  } else if (hash === "#/galeri") {
+        if (window.GaleriModule && typeof window.GaleriModule.init === "function") {
+            window.GaleriModule.init();
+        } else if (typeof window.loadGaleriData === "function") {
             window.loadGaleriData();
         }
     }

@@ -1,0 +1,337 @@
+/* ==========================================================================
+   CSS SINGLE-PAGE NEWS SHOWCASE SLIDER - VIRETA 2
+   ========================================================================== */
+
+:root {
+  --news-bg-card: #ffffff;
+  --news-border: rgba(226, 232, 240, 0.8);
+  --news-text-title: #0f172a;
+  --news-text-body: #475569;
+  --news-text-muted: #64748b;
+  --news-accent: #0284c7;
+  --news-accent-gradient: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  --news-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.08);
+  --news-badge-bg: rgba(2, 132, 199, 0.1);
+  --news-badge-text: #0284c7;
+  --news-btn-bg: #0284c7;
+  --news-btn-text: #ffffff;
+}
+
+[data-theme="dark"] {
+  --news-bg-card: #1e293b;
+  --news-border: rgba(255, 255, 255, 0.08);
+  --news-text-title: #f8fafc;
+  --news-text-body: #cbd5e1;
+  --news-text-muted: #94a3b8;
+  --news-accent: #38bdf8;
+  --news-accent-gradient: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+  --news-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+  --news-badge-bg: rgba(56, 189, 248, 0.15);
+  --news-badge-text: #38bdf8;
+  --news-btn-bg: #38bdf8;
+  --news-btn-text: #0f172a;
+}
+
+/* Badge Header */
+.news-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--news-badge-bg);
+  color: var(--news-badge-text);
+  padding: 6px 16px;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  border: 1px solid var(--news-border);
+}
+
+/* Showcase Viewport */
+.news-showcase-viewport {
+  position: relative;
+  width: 100%;
+  min-height: 480px;
+  background: var(--news-bg-card);
+  border: 1px solid var(--news-border);
+  border-radius: 24px;
+  box-shadow: var(--news-shadow);
+  overflow: hidden;
+}
+
+/* Slide Container */
+.news-stage {
+  position: relative;
+  width: 100%;
+  min-height: 480px;
+}
+
+/* Single News Screen (Tampil 1 Per 1) */
+.news-screen-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1.1fr 1.3fr;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(30px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.6s;
+}
+
+.news-screen-item.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  z-index: 2;
+}
+
+/* ==========================================================================
+   BAGIAN KIRI: CARD ISI DETAIL (CLAMPED)
+   ========================================================================== */
+.news-col-left {
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 1;
+}
+
+.news-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.news-category-tag {
+  background: var(--news-badge-bg);
+  color: var(--news-badge-text);
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.news-date-text {
+  font-size: 0.85rem;
+  color: var(--news-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Card Detail dengan Teks Dibatasi (Line Clamp) */
+.news-detail-card {
+  background: rgba(2, 132, 199, 0.03);
+  border: 1px dashed var(--news-border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+[data-theme="dark"] .news-detail-card {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.news-snippet-text {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--news-text-body);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* Hanya tampil 4 baris */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Tombol Selengkapnya */
+.news-readmore-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--news-btn-bg);
+  color: var(--news-btn-text);
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  width: fit-content;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+}
+
+.news-readmore-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(2, 132, 199, 0.35);
+  filter: brightness(1.08);
+}
+
+/* ==========================================================================
+   BAGIAN KANAN: FOTO + JUDUL & KEGIATAN DI ATAS FOTO
+   ========================================================================== */
+.news-col-right {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 480px;
+  overflow: hidden;
+  background: #0f172a;
+}
+
+.news-feature-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.8s ease;
+}
+
+.news-screen-item.active .news-feature-img {
+  transform: scale(1.03);
+}
+
+/* Overlay Gradient untuk teks di atas foto */
+.news-img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(15, 23, 42, 0.2) 0%,
+    rgba(15, 23, 42, 0.5) 50%,
+    rgba(15, 23, 42, 0.92) 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 40px;
+}
+
+.news-overlay-badge {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #ffffff;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  width: fit-content;
+  margin-bottom: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.news-overlay-title {
+  color: #ffffff;
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.35;
+  margin: 0;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* ==========================================================================
+   TOMBOL PANAH DI UJUNG KANAN ATAS
+   ========================================================================== */
+.news-nav-controls {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  gap: 10px;
+  z-index: 10;
+}
+
+.news-arrow-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.news-arrow-btn:hover {
+  background: var(--news-btn-bg);
+  color: var(--news-btn-text);
+  border-color: var(--news-btn-bg);
+  transform: scale(1.08);
+}
+
+/* Button Arsip Berita */
+.btn-outline-archive {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 9999px;
+  border: 1.5px solid var(--news-accent);
+  color: var(--news-accent);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-archive:hover {
+  background: var(--news-accent);
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   RESPONSIVE (TAMPILAN HP / TABLET)
+   ========================================================================== */
+@media (max-width: 900px) {
+  .news-screen-item {
+    grid-template-columns: 1fr;
+    grid-template-rows: 260px auto;
+    position: relative;
+    transform: none;
+  }
+
+  .news-screen-item:not(.active) {
+    display: none;
+  }
+
+  .news-col-right {
+    grid-row: 1;
+    min-height: 260px;
+    height: 260px;
+  }
+
+  .news-img-overlay {
+    padding: 20px;
+  }
+
+  .news-overlay-title {
+    font-size: 1.25rem;
+  }
+
+  .news-col-left {
+    grid-row: 2;
+    padding: 24px 20px;
+  }
+
+  .news-nav-controls {
+    top: 14px;
+    right: 14px;
+  }
+}

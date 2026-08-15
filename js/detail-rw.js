@@ -13,17 +13,20 @@ let isSwapping = false;
 let backendBaseUrl = "http://localhost:3000";
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Hanya inisialisasi modul yang sesuai dengan elemen yang ada di halaman saat ini
+  console.log("🚀 [RW ENGINE] DOMContentLoaded.");
   if (document.getElementById("rwContainer") || document.getElementById("profil-rw")) {
+    console.log("🎯 [RW ENGINE] Elemen Orbit RW terdeteksi.");
     initProfileRwLoader();
   }
   if (document.getElementById("rwDetailWrapper")) {
+    console.log("🎯 [RW ENGINE] Elemen Detail RW terdeteksi.");
     initDetailRwPage();
   }
 });
 
 // Listener jika komponen dimuat dinamis via components.js
 window.addEventListener("componentLoaded", (e) => {
+  console.log("🔄 [RW ENGINE] Event componentLoaded diterima:", e.detail);
   if (e.detail && e.detail.name === "profil-rw") {
     initProfileRwLoader();
   }
@@ -33,7 +36,7 @@ window.addEventListener("componentLoaded", (e) => {
 });
 
 /**
- * Polling DOM untuk memastikan kontainer #rwContainer tersedia (Hanya di Halaman Utama/Landing)
+ * Polling DOM untuk kontainer Orbit
  */
 function initProfileRwLoader() {
   let attempts = 0;
@@ -43,23 +46,24 @@ function initProfileRwLoader() {
     const rwContainer = document.getElementById("rwContainer");
     if (rwContainer) {
       clearInterval(checkExist);
+      console.log("✅ [PROFILE RW] Container #rwContainer ditemukan.");
       fetchProfileRw(rwContainer);
     } else if (++attempts >= maxAttempts) {
       clearInterval(checkExist);
-      // Hening jika memang bukan halaman orbit RW
+      console.warn("⚠️ [PROFILE RW] Container #rwContainer tidak ditemukan setelah polling.");
     }
   }, 100);
 }
 
 /**
- * Fetch Data dari Backend API (Landing Page Orbit)
+ * Fetch Data Orbit RW
  */
 async function fetchProfileRw(rwContainer) {
   try {
     const targetUrl =
-      window.API && window.API.RW
-        ? window.API.RW.GET_ALL
-        : "http://localhost:3000/api/admin/rw";
+      window.API && window.API.RW && window.API.RW.GET_PUBLIC
+        ? window.API.RW.GET_PUBLIC
+        : "http://localhost:3000/api/public/rw";
     backendBaseUrl =
       window.API && window.API.BASE_URL
         ? window.API.BASE_URL
@@ -67,34 +71,45 @@ async function fetchProfileRw(rwContainer) {
     const fetcher =
       typeof window.apiFetch === "function" ? window.apiFetch : fetch;
 
+    console.log(`🌐 [PROFILE RW] Fetching orbit data from: ${targetUrl}`);
     const response = await fetcher(targetUrl);
+
+    console.log(`📡 [PROFILE RW] HTTP Status: ${response.status} (${response.statusText})`);
+
+    if (response.status === 401 || response.status === 403) {
+      console.error("🔒 [PROFILE RW] Error Autentikasi: Endpoint publik tidak dapat diakses!");
+    }
+
     const result = await response.json();
+    console.log("📦 [PROFILE RW] Response JSON:", result);
 
     const rawData = Array.isArray(result) ? result : result.data || [];
 
     if (Array.isArray(rawData) && rawData.length > 0) {
       rwGlobalData = rawData;
+      console.log(`📊 [PROFILE RW] Memproses ${rwGlobalData.length} data pengurus RW.`);
 
       activeCenterLeader =
         rwGlobalData.find((d) => d.is_aktif == 1 || d.is_aktif == "1") ||
         rwGlobalData[0];
 
+      console.log("👑 [PROFILE RW] Active Leader:", activeCenterLeader);
       renderOrbitStage(rwContainer);
     } else {
+      console.warn("⚠️ [PROFILE RW] Data kosong dari endpoint RW.");
       rwContainer.innerHTML = `<p style="text-align: center; color: #718096; padding: 30px;">Belum ada data kepengurusan RW.</p>`;
     }
   } catch (err) {
-    console.error(">>> [ERROR PROFILE RW]:", err);
+    console.error("❌ [ERROR PROFILE RW]:", err);
     rwContainer.innerHTML = `<p style="text-align: center; color: #ef4444; padding: 30px;">Gagal memuat data struktur RW.</p>`;
   }
 }
 
 /**
- * Helper: Mengurai status & badge dari database secara dinamis
+ * Helper Status Leader
  */
 function resolveLeaderStatus(item) {
   const isAktif = item.is_aktif == 1 || item.is_aktif == "1";
-
   let statusText = item.status
     ? item.status.toUpperCase()
     : isAktif
@@ -109,7 +124,7 @@ function resolveLeaderStatus(item) {
 }
 
 /**
- * Render Panggung Orbit Utama (Center Hub + Satelit)
+ * Render Panggung Orbit Utama
  */
 function renderOrbitStage(rwContainer) {
   if (!rwContainer || !activeCenterLeader) return;
@@ -311,9 +326,7 @@ function startCenterAutoSlider() {
 }
 
 /**
- * ==========================================================================
- * DETAIL PAGE: RENDER SELURUH DATA RW KE DALAM DIRECTORY CARDS
- * ==========================================================================
+ * Fetch Detail Page RW
  */
 function initDetailRwPage() {
   let attempts = 0;
@@ -323,9 +336,11 @@ function initDetailRwPage() {
     const detailWrapper = document.getElementById("rwDetailWrapper");
     if (detailWrapper) {
       clearInterval(checkExist);
+      console.log("✅ [DETAIL RW] Container #rwDetailWrapper ditemukan.");
       fetchDetailRwPage(detailWrapper);
     } else if (++attempts >= maxAttempts) {
       clearInterval(checkExist);
+      console.warn("⚠️ [DETAIL RW] Container #rwDetailWrapper tidak ditemukan setelah polling.");
     }
   }, 100);
 }
@@ -333,9 +348,9 @@ function initDetailRwPage() {
 async function fetchDetailRwPage(container) {
   try {
     const targetUrl =
-      window.API && window.API.RW
-        ? window.API.RW.GET_ALL
-        : "http://localhost:3000/api/admin/rw";
+      window.API && window.API.RW && window.API.RW.GET_PUBLIC
+        ? window.API.RW.GET_PUBLIC
+        : "http://localhost:3000/api/public/rw";
     const backendUrl =
       window.API && window.API.BASE_URL
         ? window.API.BASE_URL
@@ -343,11 +358,22 @@ async function fetchDetailRwPage(container) {
     const fetcher =
       typeof window.apiFetch === "function" ? window.apiFetch : fetch;
 
+    console.log(`🌐 [DETAIL RW] Fetching detail data from: ${targetUrl}`);
     const response = await fetcher(targetUrl);
+
+    console.log(`📡 [DETAIL RW] HTTP Status: ${response.status} (${response.statusText})`);
+
+    if (response.status === 401 || response.status === 403) {
+      console.error("🔒 [DETAIL RW] Error Autentikasi: Endpoint publik tidak dapat diakses!");
+    }
+
     const result = await response.json();
+    console.log("📦 [DETAIL RW] Response JSON:", result);
+
     const rawData = Array.isArray(result) ? result : result.data || [];
 
     if (!Array.isArray(rawData) || rawData.length === 0) {
+      console.warn("⚠️ [DETAIL RW] Data detail RW kosong.");
       container.innerHTML = `
         <div class="rw-empty-state">
             <i class="fa-solid fa-folder-open fa-3x"></i>
@@ -356,7 +382,6 @@ async function fetchDetailRwPage(container) {
       return;
     }
 
-    // Urutkan: Pengurus Aktif tampil paling depan
     const sortedData = [...rawData].sort(
       (a, b) => (b.is_aktif || 0) - (a.is_aktif || 0),
     );
@@ -371,14 +396,12 @@ async function fetchDetailRwPage(container) {
             : "DEMISIONER";
         const badgeClass = isAktif ? "status-active" : "status-demis";
 
-        // FIX: Deklarasi imgUrl yang sebelumnya hilang
         const imgUrl = item.foto_utama
           ? item.foto_utama.startsWith("http")
             ? item.foto_utama
             : `${backendUrl}/assets/galery/rw/${item.foto_utama}`
           : "assets/img/default-avatar.png";
 
-        // Format Nomor WhatsApp
         const phoneNumber =
           item.nomor_telepon || item.no_wa || item.telepon || item.hp;
 
@@ -402,20 +425,14 @@ async function fetchDetailRwPage(container) {
 
         return `
           <div class="rw-detail-card ${isAktif ? "is-active-card" : ""}">
-              <!-- 1. GAMBAR FOTO (40%) -->
               <div class="rw-card-img-box">
                   <img src="${imgUrl}" alt="${item.nama_ketua || "Pengurus RW"}" onerror="this.onerror=null; this.src='assets/img/default-avatar.png';">
                   <span class="rw-card-badge ${badgeClass}">${statusText}</span>
               </div>
-
-              <!-- KONTEN INFO (60%) -->
               <div class="rw-card-content">
-                  <!-- 2. NAMA (10%) -->
                   <h3 class="rw-card-name" title="${item.nama_ketua || "Nama Pengurus"}">
                       ${item.nama_ketua || "Nama Pengurus"}
                   </h3>
-
-                  <!-- 3. STATUS & 4. MASA JABATAN (Masing-masing 5%) -->
                   <div class="rw-card-meta">
                       <span class="rw-card-role">
                           <i class="fa-solid fa-user-tie"></i> ${item.jabatan || "Ketua RW"}
@@ -424,15 +441,11 @@ async function fetchDetailRwPage(container) {
                           <i class="fa-solid fa-calendar-check"></i> ${item.periode ? `Periode ${item.periode}` : "Periode -"}
                       </span>
                   </div>
-
-                  <!-- 5. DESKRIPSI (30%) -->
                   <div class="rw-card-desc-box">
                       <p class="rw-card-desc">
                           ${item.deskripsi || item.visi_misi || "Pengurus yang senantiasa berdedikasi dalam membangun kerukunan, keterbukaan informasi, dan pelayanan terpadu bagi warga RW."}
                       </p>
                   </div>
-
-                  <!-- 6. NOMOR WHATSAPP (10%) -->
                   <div class="rw-card-action">
                       ${waButtonHtml}
                   </div>
@@ -443,8 +456,9 @@ async function fetchDetailRwPage(container) {
       .join("");
 
     container.innerHTML = `<div class="rw-detail-grid">${cardsHtml}</div>`;
+    console.log("✨ [DETAIL RW] Render grid kepengurusan RW selesai.");
   } catch (err) {
-    console.error(">>> [ERROR DETAIL RW]:", err);
+    console.error("❌ [ERROR DETAIL RW]:", err);
     container.innerHTML = `
       <div class="rw-empty-state text-danger">
           <i class="fa-solid fa-triangle-exclamation fa-3x"></i>

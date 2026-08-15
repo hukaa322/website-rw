@@ -361,6 +361,31 @@ app.delete("/api/admin/rw/:id", authenticateToken, (req, res) => {
   });
 });
 
+// --- ENDPOINTS PUBLIK RT & RW ---
+
+// 1. Endpoint Publik RW (Landing Page Orbit & Detail RW)
+app.get("/api/public/rw", (req, res) => {
+  const sql = "SELECT * FROM rw_details ORDER BY is_aktif DESC, created_at DESC";
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, data: results });
+  });
+});
+
+// 2. Endpoint Publik RT (Landing Page & Detail RT)
+app.get("/api/public/rt", (req, res) => {
+  const sql = `
+    SELECT r.*, GROUP_CONCAT(p.foto_url) as foto_pendukung 
+    FROM rt_details r 
+    LEFT JOIN rt_photos p ON r.id = p.rt_id 
+    GROUP BY r.id ORDER BY r.nomor_rt ASC
+  `;
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, data: results });
+  });
+});
+
 
 // --- ENDPOINTS BERITA & PENGUMUMAN ---
 
@@ -614,6 +639,117 @@ app.get("/api/public/layanan", (req, res) => {
     res.json({ success: true, data: results });
   });
 });
+
+
+
+// --- 1. Pastikan folder static assets/invoice bisa diakses browser ---
+app.use("/assets/invoice", express.static(path.join(__dirname, "assets/invoice")));
+
+// --- 2. Konfigurasi Multer Upload Invoice Sementara ---
+const storageInvoice = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = path.join(__dirname, "assets/invoice");
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname) || ".webp";
+    cb(null, "inv-" + uniqueSuffix + ext);
+  },
+});
+const uploadInvoice = multer({ storage: storageInvoice });
+
+// Path file log JSON untuk pelacak usia file
+const INVOICE_LOG_FILE = path.join(__dirname, "assets/invoice/invoice_logs.json");
+
+const invoiceDir = path.join(__dirname, "assets/invoice");
+if (!fs.existsSync(invoiceDir)) {
+  fs.mkdirSync(invoiceDir, { recursive: true });
+}
+
+// Helper pencatat file ke JSON
+function logInvoiceFile(filename) {
+  let logs = [];
+  try {
+    if (fs.existsSync(INVOICE_LOG_FILE)) {
+      const content = fs.readFileSync(INVOICE_LOG_FILE, "utf-8");
+      logs = JSON.parse(content) || [];
+    }
+  } catch (e) {
+    logs = [];
+  }
+
+  logs.push({
+    filename: filename,
+    uploaded_at: Date.now() // timestamp milidetik
+  });
+
+  fs.writeFileSync(INVOICE_LOG_FILE, JSON.stringify(logs, null, 2));
+}
+
+// --- 3. Endpoint Upload Bukti Sementara (Tanpa MySQL) ---
+app.post("/api/public/upload-invoice", uploadInvoice.single("bukti_transfer"), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "File gambar tidak ditemukan." });
+    }
+
+    const filename = req.file.filename;
+    logInvoiceFile(filename);
+
+    // Dapatkan base URL aktif
+    const protocol = req.protocol;
+    const host = req.get("host");
+    const fileUrl = `${protocol}://${host}/assets/invoice/${filename}`;
+
+    return res.json({
+      success: true,
+      message: "Bukti transfer berhasil diunggah sementara.",
+      fileUrl: fileUrl,
+      filename: filename
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: "Gagal menyimpan invoice: " + error.message });
+  }
+});
+
+// --- 4. Fungsi Auto-Delete File > 7 Hari ---
+function cleanOldInvoices() {
+  if (!fs.existsSync(INVOICE_LOG_FILE)) return;
+
+  try {
+    const content = fs.readFileSync(INVOICE_LOG_FILE, "utf-8");
+    const logs = JSON.parse(content) || [];
+    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+
+    const remainingLogs = [];
+
+    logs.forEach(item => {
+      const age = now - item.uploaded_at;
+      const filePath = path.join(__dirname, "assets/invoice", item.filename);
+
+      if (age > SEVEN_DAYS_MS) {
+        // Hapus file fisik jika usianya > 7 hari
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+          console.log(`[Auto-Clean] Menghapus invoice kedaluwarsa: ${item.filename}`);
+        }
+      } else {
+        remainingLogs.push(item);
+      }
+    });
+
+    fs.writeFileSync(INVOICE_LOG_FILE, JSON.stringify(remainingLogs, null, 2));
+  } catch (err) {
+    console.error("[Auto-Clean Error]", err);
+  }
+}
+
+// Jalankan pembersihan saat server start dan setiap 24 jam sekali
+cleanOldInvoices();
+setInterval(cleanOldInvoices, 24 * 60 * 60 * 1000);
 
 // Listener Server Terakhir
 app.listen(3000, () => {

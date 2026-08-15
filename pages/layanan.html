@@ -1,35 +1,100 @@
 <section id="layanan" class="section-padding">
-    <div class="container">
-        <div class="section-header text-center margin-bottom-30">
-            <h2 class="section-title">Layanan Warga</h2>
-            <p class="section-subtitle">"Pelayanan Administrasi, Iuran, Kesehatan & Keamanan Warga Vireta 2"</p>
-        </div>
-
-        <div class="gallery-page-header text-center margin-bottom-30">
-            <div class="gallery-pill-filter">
-                <button class="pill-btn layanan-tab-btn active" data-category="semua">
-                    <i class="fa-solid fa-border-all"></i> Semua
-                </button>
-                <button class="pill-btn layanan-tab-btn" data-category="administrasi">
-                    <i class="fa-solid fa-file-signature"></i> Surat Administrasi
-                </button>
-                <button class="pill-btn layanan-tab-btn" data-category="iuran">
-                    <i class="fa-solid fa-receipt"></i> Pembayaran Iuran
-                </button>
-                <button class="pill-btn layanan-tab-btn" data-category="kesehatan">
-                    <i class="fa-solid fa-heart-pulse"></i> Kesehatan
-                </button>
-                <button class="pill-btn layanan-tab-btn" data-category="keamanan">
-                    <i class="fa-solid fa-shield-halved"></i> Keamanan
-                </button>
-            </div>
-        </div>
-
-        <div id="layananGrid" class="layanan-grid">
-            <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
-                <i class="fa-solid fa-spinner fa-spin fa-2x spinner-icon"></i>
-                <p class="loading-text" style="margin-top: 10px; font-weight: 600;">Memuat layanan warga...</p>
-            </div>
-        </div>
+  <div class="container">
+    <div class="section-header text-center margin-bottom-30">
+      <h2 class="section-title">Layanan Warga</h2>
+      <p class="section-subtitle">Pelayanan Administrasi, Pembayaran Iuran, Kesehatan & Keamanan</p>
     </div>
+
+    <!-- Layout Dua Kolom -->
+    <div class="layanan-wrapper-layout">
+      
+      <!-- KOLOM KIRI: FORM PENGAJUAN / IURAN -->
+      <div class="layanan-form-box">
+        <div class="layanan-form-header">
+          <h3 class="layanan-form-title">
+            <i class="fa-solid fa-paper-plane" style="color: #2563eb;"></i> 
+            Pengajuan Layanan & Konfirmasi Iuran
+          </h3>
+          <p class="layanan-form-subtitle">Pilih jenis layanan dan wilayah RT/RW untuk terhubung ke WhatsApp pengurus.</p>
+        </div>
+
+        <form id="formLayananWarga">
+          
+          <!-- 1. Kategori Layanan -->
+          <div class="form-group-layanan">
+            <label for="layananKategori">Jenis Layanan <span class="required-dot">*</span></label>
+            <select id="layananKategori" class="form-control-custom" required>
+              <option value="surat">Surat & Administrasi</option>
+              <option value="iuran">Pembayaran Iuran Warga</option>
+            </select>
+          </div>
+
+          <!-- 2. Target RT/RW dari Data Layanan -->
+          <div class="form-group-layanan">
+            <label for="tujuanLayanan">Pilih Layanan / Wilayah (RT/RW) <span class="required-dot">*</span></label>
+            <select id="tujuanLayanan" class="form-control-custom" required>
+              <option value="">-- Memuat data layanan... --</option>
+            </select>
+          </div>
+
+          <!-- 3. KOTAK KHUSUS QRIS & UPLOAD BUKTI STRUK (Muncul Hanya Saat Pilih Iuran) -->
+          <div id="qrisContainer" style="display: none; background: #f8fafc; border: 1.5px dashed #cbd5e1; border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+            <p style="margin: 0 0 8px 0; font-size: 0.85rem; font-weight: 700; color: #1e293b; text-align: center;">
+              <i class="fa-solid fa-qrcode" style="color: #2563eb;"></i> Scan QRIS untuk Pembayaran
+            </p>
+            
+            <div id="qrisImageWrapper" style="text-align: center;">
+              <!-- Render Gambar QRIS dari Database -->
+            </div>
+
+            <!-- INPUT UPLOAD BUKTI / STRUK SEMENTARA -->
+            <div style="margin-top: 14px;">
+              <label style="display: block; font-weight: 600; font-size: 0.85rem; color: #334155; margin-bottom: 4px;">
+                <i class="fa-solid fa-file-invoice-dollar" style="color: #16a34a;"></i> Unggah Bukti Transfer / Invoice
+              </label>
+              <input type="file" id="inputBuktiTransfer" class="form-control-custom" accept="image/*" style="padding: 8px;">
+            </div>
+
+            <!-- PREVIEW GAMBAR STRUK (Client-Side) -->
+            <div id="previewBuktiWrapper" style="display: none; margin-top: 10px; text-align: center;">
+              <p style="font-size: 0.75rem; color: #16a34a; font-weight: 600; margin-bottom: 4px;">
+                <i class="fa-solid fa-circle-check"></i> Foto berhasil dipilih (Siap dilampirkan)
+              </p>
+              <img id="imgPreviewBukti" src="" alt="Preview Bukti" style="max-height: 140px; border-radius: 6px; border: 1px solid #cbd5e1; box-shadow: 0 2px 6px rgba(0,0,0,0.08);">
+            </div>
+
+            <p style="margin: 10px 0 0 0; font-size: 0.75rem; color: #64748b; text-align: center;">
+              *Gambar ini hanya diproses di browser dan tidak diunggah ke server database.
+            </p>
+          </div>
+
+          <!-- 4. Catatan / Detail Keperluan -->
+          <div class="form-group-layanan">
+            <label for="catatanWarga">Catatan / Detail Keperluan <span class="required-dot">*</span></label>
+            <textarea id="catatanWarga" class="form-control-custom" rows="3" placeholder="Contoh: Konfirmasi pembayaran iuran bulan ini a.n Budi RT 02 / Pengantar SKCK..." required></textarea>
+          </div>
+
+          <!-- Tombol Kirim WhatsApp -->
+          <button type="submit" id="btnSubmitLayanan" class="btn-submit-wa">
+            <i class="fa-brands fa-whatsapp fa-xl"></i> Kirim ke WhatsApp Pengurus
+          </button>
+        </form>
+      </div>
+
+      <!-- KOLOM KANAN: CARD KHUSUS KESEHATAN & KEAMANAN -->
+      <div>
+        <div style="margin-bottom: 12px;">
+          <h3 style="font-size: 1.15rem; font-weight: 700; color: #1e293b; margin: 0;">
+            <i class="fa-solid fa-tower-broadcast" style="color: #dc2626;"></i> Kontak Siaga & Terjadwal
+          </h3>
+          <p style="color: #64748b; font-size: 0.85rem; margin: 4px 0 0 0;">Layanan keamanan pos jaga dan posyandu/kesehatan.</p>
+        </div>
+
+        <div id="quickCardsContainer" class="quick-cards-wrapper">
+          <!-- Card Keamanan & Kesehatan dari API -->
+        </div>
+      </div>
+
+    </div>
+  </div>
 </section>

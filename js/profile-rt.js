@@ -1,138 +1,161 @@
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("🚀 [PROFILE RT] Inisialisasi Smooth Infinite Slider RT.");
   initProfileRtLoader();
 });
 
+let animationFrameId = null;
+let isPaused = false;
+let pressTimer = null;
+
 function initProfileRtLoader() {
+  let attempts = 0;
+  const maxAttempts = 30;
+
   const checkExist = setInterval(() => {
     const rtContainer = document.getElementById("rtContainer");
     if (rtContainer) {
       clearInterval(checkExist);
       fetchProfileRt(rtContainer);
+    } else if (++attempts >= maxAttempts) {
+      clearInterval(checkExist);
     }
   }, 100);
 }
 
 async function fetchProfileRt(rtContainer) {
-  console.log(">>> [PROFILE RT] Mengambil data dari backend...");
-
-  rtContainer.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 40px 0;">
-            <i class="fa-solid fa-spinner fa-spin fa-2x" style="color: #007bff;"></i>
-            <p style="margin-top: 10px; color: #6c757d;">Memuat data RT...</p>
-        </div>
-    `;
+  const targetUrl =
+    window.API && window.API.RT && window.API.RT.GET_PUBLIC
+      ? window.API.RT.GET_PUBLIC
+      : "http://localhost:3000/api/public/rt";
 
   try {
-    const response = await apiFetch(API.RT.GET_ALL);
-    const result = await response.json();
+    const fetcher = typeof window.apiFetch === "function" ? window.apiFetch : fetch;
+    const response = await fetcher(targetUrl);
 
-    if (
-      result.success &&
-      Array.isArray(result.data) &&
-      result.data.length > 0
-    ) {
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+    const result = await response.json();
+    const rawData = Array.isArray(result) ? result : result.data || [];
+
+    if (Array.isArray(rawData) && rawData.length > 0) {
       rtContainer.innerHTML = "";
 
-      result.data.forEach((item) => {
-        const noRt = String(item.nomor_rt).padStart(2, "0");
+      const backendUrl =
+        window.API && window.API.BASE_URL
+          ? window.API.BASE_URL
+          : "http://localhost:3000";
 
-        let images = [];
-        if (Array.isArray(item.foto) && item.foto.length > 0) {
-          images = item.foto;
-        } else {
-          if (item.foto_utama) images.push(item.foto_utama);
-          if (item.foto_2) images.push(item.foto_2);
-          if (item.foto_3) images.push(item.foto_3);
-          if (item.foto_kegiatan) images.push(item.foto_kegiatan);
+      // Template Card Modern Portrait
+      const createCardHtml = (item) => {
+        const noRt = String(item.nomor_rt).padStart(2, "0");
+        let foto = "assets/img/default-avatar.png";
+        if (item.foto_utama) {
+          foto = /^https?:\/\//i.test(item.foto_utama)
+            ? item.foto_utama
+            : `${backendUrl}/assets/galery/rt/${item.foto_utama}`;
         }
 
-        if (images.length === 0) images.push("default-avatar.png");
+        return `
+          <div class="member-card-modern">
+              <div class="rt-card-img-wrap">
+                  <span class="rt-banner-badge">RT ${noRt} / RW 05</span>
+                  <img src="${foto}" 
+                       alt="Foto Ketua RT ${noRt}" 
+                       class="rt-portrait-img"
+                       onerror="this.onerror=null; this.src='assets/img/default-avatar.png';">
+              </div>
+              <div class="rt-card-body">
+                  <h3 class="rt-card-title">RT ${noRt}</h3>
+                  <h4 class="rt-leader-name">${item.nama_ketua || "Nama Belum Terdata"}</h4>
+                  
+                  <a href="${item.nomor_telepon ? 'https://wa.me/' + cleanPhone(item.nomor_telepon) : '#'}" 
+                     target="_blank" 
+                     rel="noopener noreferrer" 
+                     class="rt-contact-pill">
+                      <i class="fa-brands fa-whatsapp"></i> ${item.nomor_telepon ? formatPhone(item.nomor_telepon) : "Kontak Belum Ada"}
+                  </a>
 
-        const backendUrl =
-          window.API && window.API.BASE_URL
-            ? window.API.BASE_URL
-            : "http://localhost:3000";
+                  <a href="detail-rt.html?id=${item.id}" class="rt-card-btn">
+                      Detail Profil <i class="fa-solid fa-arrow-right"></i>
+                  </a>
+              </div>
+          </div>
+        `;
+      };
 
-        const imagesHtml = images
-          .map((imgName, index) => {
-            let src = "";
+      // Gandakan elemen kartu agar looping continuous tidak pernah putus
+      let cardsHtml = rawData.map(createCardHtml).join("");
+      rtContainer.innerHTML = cardsHtml + cardsHtml;
 
-            if (imgName === "default-avatar.png") {
-              src = "assets/img/default-avatar.png"; // Ambil aset statis lokal frontend
-            } else if (/^https?:\/\//i.test(imgName)) {
-              src = imgName; // Jika sudah full URL
-            } else if (imgName.startsWith("/")) {
-              src = `${backendUrl}${imgName}`;
-            } else {
-              src = `${backendUrl}/assets/galery/rt/${imgName}`; // Path ke Backend Port 3000
-            }
-
-            const activeClass = index === 0 ? "active" : "";
-
-            return `
-        <img src="${src}" 
-             alt="Foto RT ${noRt}" 
-             class="slide-img ${activeClass}" 
-             onerror="this.onerror=null; this.src='assets/img/default-avatar.png';">
-    `;
-          })
-          .join("");
-
-        const cardHtml = `
-                    <div class="member-card">
-                        <div class="card-slider slider-wrapper">
-                            ${imagesHtml}
-                        </div>
-                        <h3>RT ${noRt} / RW 05</h3>
-                        <h4>${item.nama_ketua || "Belum diisi"}</h4>
-                        <p>
-                            <i class="fa-solid fa-phone"></i> 
-                            ${item.nomor_telepon ? formatPhone(item.nomor_telepon) : "-"}
-                        </p>
-                        <a href="detail-rt.html?id=${item.id}" class="btn btn-outline btn-sm margin-top-15">
-                            Selengkapnya <i class="fa-solid fa-angle-right"></i>
-                        </a>
-                    </div>
-                `;
-
-        rtContainer.insertAdjacentHTML("beforeend", cardHtml);
-      });
-
-      initCardSliders();
+      startInfiniteGlide(rtContainer, rawData.length);
     } else {
-      rtContainer.innerHTML = `
-                <div style="grid-column: 1 / -1; text-align: center; padding: 30px; background: #f8f9fa; border-radius: 8px;">
-                    <i class="fa-solid fa-folder-open fa-2x" style="color: #a0aec0; margin-bottom: 10px;"></i>
-                    <p style="color: #4a5568; margin: 0;">Belum ada data RT yang tersedia.</p>
-                </div>
-            `;
+      rtContainer.innerHTML = `<p style="padding: 30px; text-align: center; color: var(--rt-text-muted);">Belum ada data RT yang aktif.</p>`;
     }
   } catch (error) {
-    console.error(">>> [ERROR PROFILE RT] Gagal mengambil data:", error);
-    rtContainer.innerHTML = `
-            <div style="grid-column: 1 / -1; text-align: center; padding: 30px; background: #fff5f5; border: 1px solid #feb2b2; border-radius: 8px;">
-                <i class="fa-solid fa-triangle-exclamation fa-2x" style="color: #e53e3e; margin-bottom: 10px;"></i>
-                <p style="color: #c53030; margin: 0;">Gagal terhubung ke server backend.</p>
-            </div>
-        `;
+    console.error("❌ [ERROR PROFILE RT]:", error);
+    rtContainer.innerHTML = `<p style="padding: 30px; text-align: center; color: #ef4444;">Gagal memuat data RT dari server.</p>`;
   }
 }
 
-function initCardSliders() {
-  const sliders = document.querySelectorAll(".card-slider");
+/**
+ * Mesin Infinite Glide dengan Logika Hold to Pause 0.5s
+ */
+function startInfiniteGlide(track, originalItemCount) {
+  const viewport = document.getElementById("rtCarouselViewport");
+  if (!viewport || originalItemCount <= 0) return;
 
-  sliders.forEach((slider) => {
-    const imgs = slider.querySelectorAll(".slide-img");
-    if (imgs.length <= 1) return;
+  let currentTranslate = 0;
+  const speed = 0.75; // Kecepatan glide pelan dan halus
 
-    let currentIndex = 0;
+  function getSingleCycleWidth() {
+    return track.scrollWidth / 2;
+  }
 
-    setInterval(() => {
-      imgs[currentIndex].classList.remove("active");
-      currentIndex = (currentIndex + 1) % imgs.length;
-      imgs[currentIndex].classList.add("active");
-    }, 3000);
-  });
+  function animate() {
+    if (!isPaused) {
+      currentTranslate += speed;
+      const cycleWidth = getSingleCycleWidth();
+
+      // Reset ke awal tanpa patahan saat 1 siklus terlewati
+      if (currentTranslate >= cycleWidth) {
+        currentTranslate = 0;
+      }
+
+      track.style.transform = `translateX(-${currentTranslate}px)`;
+    }
+    animationFrameId = requestAnimationFrame(animate);
+  }
+
+  // --- LOGIKA PRESS AND HOLD 0.5 DETIK ---
+  function startHoldTimer() {
+    clearTimeout(pressTimer);
+    pressTimer = setTimeout(() => {
+      isPaused = true; // Berhenti hanya jika sudah ditekan selama 500ms (0.5 detik)
+    }, 500);
+  }
+
+  function releaseHold() {
+    clearTimeout(pressTimer);
+    isPaused = false; // Lanjut bergerak saat tekanan/klik dilepas
+  }
+
+  // Event Mouse (Desktop)
+  viewport.addEventListener("mousedown", startHoldTimer);
+  window.addEventListener("mouseup", releaseHold);
+
+  // Event Touch (Smartphone / Tablet)
+  viewport.addEventListener("touchstart", startHoldTimer, { passive: true });
+  window.addEventListener("touchend", releaseHold);
+  window.addEventListener("touchcancel", releaseHold);
+
+  if (animationFrameId) cancelAnimationFrame(animationFrameId);
+  animationFrameId = requestAnimationFrame(animate);
+}
+
+function cleanPhone(phone) {
+  let cleaned = String(phone).replace(/\D/g, "");
+  if (cleaned.startsWith("0")) return "62" + cleaned.slice(1);
+  return cleaned;
 }
 
 function formatPhone(phone) {

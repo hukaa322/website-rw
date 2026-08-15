@@ -40,6 +40,7 @@ function renderGalleryCards(data) {
 
         let badgeClass = 'bg-primary';
         let labelKategori = 'UMKM Warga';
+        
         if (item.kategori === 'kegiatan') {
             badgeClass = 'bg-success';
             labelKategori = 'Kegiatan RW';
@@ -50,25 +51,25 @@ function renderGalleryCards(data) {
 
         return `
             <div class="gallery-card" data-category="${item.kategori}">
-                <div class="gallery-img-wrapper" style="height: 200px; overflow: hidden; position: relative;">
-                    <a href="galery-detail.html?id=${item.id}">
-                        <img src="${imgSrc}" alt="${item.judul}" style="width: 100%; height: 100%; object-fit: cover;">
+                <div class="gallery-img-wrapper">
+                    <a href="galery-detail.html?id=${item.id}" aria-label="${item.judul}">
+                        <img src="${imgSrc}" alt="${item.judul}" loading="lazy">
                     </a>
-                    <span class="gallery-badge ${badgeClass}" style="position: absolute; top: 12px; left: 12px; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; color: #fff;">
+                    <span class="gallery-badge ${badgeClass}">
                         ${labelKategori}
                     </span>
                 </div>
-                <div class="gallery-content" style="padding: 16px; background: white;">
-                    <h4 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 700;">
-                        <a href="galery-detail.html?id=${item.id}" style="text-decoration: none; color: inherit;">
+                <div class="gallery-content">
+                    <h4 class="gallery-title">
+                        <a href="galery-detail.html?id=${item.id}">
                             ${item.judul}
                         </a>
                     </h4>
-                    <p style="font-size: 13px; color: var(--text-muted, #64748B); line-height: 1.5; margin-bottom: 12px;">
+                    <p class="gallery-desc">
                         ${item.deskripsi || 'Tidak ada deskripsi tersedia.'}
                     </p>
-                    <a href="galery-detail.html?id=${item.id}" class="btn btn-sm btn-outline" style="font-size: 12px; display: inline-block;">
-                        <i class="fa-solid fa-circle-info"></i> Lihat Detail
+                    <a href="galery-detail.html?id=${item.id}" class="gallery-btn-action">
+                        <i class="fa-solid fa-circle-info"></i> Detail
                     </a>
                 </div>
             </div>
