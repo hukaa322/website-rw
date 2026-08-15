@@ -1,0 +1,267 @@
+/* ==========================================================================
+   galeri.css - Pinterest (Masonry) Style Layout with Full Dark/Light Support
+   ========================================================================== */
+
+/* -----------------------------
+   1. Theme Variables
+   ----------------------------- */
+:root {
+  --gal-bg-card: #ffffff;
+  --gal-bg-overlay: rgba(15, 23, 42, 0.75);
+  --gal-border: #f1f5f9;
+  --gal-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
+  --gal-shadow-hover: 0 12px 28px -4px rgba(0, 0, 0, 0.15);
+  
+  --gal-text-title: #0f172a;
+  --gal-text-desc: #475569;
+  --gal-text-muted: #94a3b8;
+  
+  --gal-tab-bg: #f1f5f9;
+  --gal-tab-border: #e2e8f0;
+  --gal-tab-text: #475569;
+  --gal-tab-active-bg: #0f172a;
+  --gal-tab-active-text: #ffffff;
+
+  --gal-btn-bg: #f8fafc;
+  --gal-btn-border: #cbd5e1;
+  --gal-btn-text: #1e293b;
+  --gal-btn-hover-bg: #0f172a;
+  --gal-btn-hover-text: #ffffff;
+}
+
+[data-theme="dark"],
+body.dark-mode {
+  --gal-bg-card: #1e293b;
+  --gal-bg-overlay: rgba(0, 0, 0, 0.82);
+  --gal-border: #334155;
+  --gal-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
+  --gal-shadow-hover: 0 14px 32px -4px rgba(0, 0, 0, 0.6);
+  
+  --gal-text-title: #f8fafc;
+  --gal-text-desc: #cbd5e1;
+  --gal-text-muted: #64748b;
+  
+  --gal-tab-bg: #0f172a;
+  --gal-tab-border: #334155;
+  --gal-tab-text: #94a3b8;
+  --gal-tab-active-bg: #3b82f6;
+  --gal-tab-active-text: #ffffff;
+
+  --gal-btn-bg: #0f172a;
+  --gal-btn-border: #334155;
+  --gal-btn-text: #f1f5f9;
+  --gal-btn-hover-bg: #3b82f6;
+  --gal-btn-hover-text: #ffffff;
+}
+
+/* -----------------------------
+   2. Masonry Grid Container
+   ----------------------------- */
+.gallery-grid {
+  column-count: 4;
+  column-gap: 1.25rem;
+  width: 100%;
+  margin: 0 auto;
+}
+
+@media (max-width: 1200px) {
+  .gallery-grid {
+    column-count: 3;
+    column-gap: 1.1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .gallery-grid {
+    column-count: 2;
+    column-gap: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery-grid {
+    column-count: 1;
+    column-gap: 0;
+  }
+}
+
+/* -----------------------------
+   3. Pinterest Card Component
+   ----------------------------- */
+.gallery-card {
+  break-inside: avoid;
+  page-break-inside: avoid;
+  margin-bottom: 1.25rem;
+  background-color: var(--gal-bg-card);
+  border: 1px solid var(--gal-border);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--gal-shadow);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.28s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .gallery-card {
+    margin-bottom: 0.85rem;
+    border-radius: 14px;
+  }
+}
+
+.gallery-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--gal-shadow-hover);
+}
+
+/* Image Wrapper */
+.gallery-img-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--gal-tab-bg);
+}
+
+.gallery-img-wrapper a {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.gallery-img-wrapper img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.4s ease, filter 0.3s ease;
+}
+
+.gallery-card:hover .gallery-img-wrapper img {
+  transform: scale(1.04);
+}
+
+/* Category Badge (Floating glassmorphism style) */
+.gallery-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #ffffff;
+  z-index: 3;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+}
+
+.gallery-badge.bg-primary {
+  background-color: rgba(37, 99, 235, 0.88);
+}
+
+.gallery-badge.bg-success {
+  background-color: rgba(16, 185, 129, 0.88);
+}
+
+.gallery-badge.bg-warning {
+  background-color: rgba(234, 138, 0, 0.92);
+}
+
+/* Card Content Area */
+.gallery-content {
+  padding: 1rem 1.15rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  background: var(--gal-bg-card);
+  transition: background-color 0.28s ease;
+}
+
+.gallery-title {
+  margin: 0 0 0.4rem 0;
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.gallery-title a {
+  color: var(--gal-text-title);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.gallery-title a:hover {
+  color: #3b82f6;
+}
+
+.gallery-desc {
+  font-size: 0.835rem;
+  color: var(--gal-text-desc);
+  line-height: 1.5;
+  margin: 0 0 0.85rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Detail Button */
+.gallery-btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background-color: var(--gal-btn-bg);
+  border: 1px solid var(--gal-btn-border);
+  color: var(--gal-btn-text);
+  text-decoration: none;
+  align-self: flex-start;
+  transition: all 0.2s ease;
+}
+
+.gallery-btn-action:hover {
+  background-color: var(--gal-btn-hover-bg);
+  border-color: var(--gal-btn-hover-bg);
+  color: var(--gal-btn-hover-text);
+}
+
+/* -----------------------------
+   4. Category Filter Tabs
+   ----------------------------- */
+.gallery-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.gallery-tab-btn {
+  background-color: var(--gal-tab-bg);
+  color: var(--gal-tab-text);
+  border: 1px solid var(--gal-tab-border);
+  padding: 8px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.gallery-tab-btn:hover {
+  border-color: var(--gal-tab-text);
+}
+
+.gallery-tab-btn.active {
+  background-color: var(--gal-tab-active-bg);
+  border-color: var(--gal-tab-active-bg);
+  color: var(--gal-tab-active-text);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}

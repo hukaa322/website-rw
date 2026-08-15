@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Galeri & UMKM - Vireta 2</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/cards.css">
+    <link rel="stylesheet" href="css/style-landing.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<div id="navbar"></div>
+<div id="bottom-nav"></div>
+
+<main class="section-padding margin-top-40">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">Dokumentasi Galeri & UMKM</h2>
+            <p class="section-subtitle">Detail Informasi Kegiatan dan Produk UMKM</p>
+        </div>
+
+        <div id="detailContainer" class="about-grid margin-bottom-30" style="background: white; padding: 30px; border-radius: var(--radius-lg); box-shadow: var(--shadow-md);">
+            <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+                <p style="margin-top: 10px;">Memuat detail galeri...</p>
+            </div>
+        </div>
+
+        <div class="text-center margin-top-40">
+            <a href="galery-lengkap.html" class="btn btn-outline">
+                <i class="fa-solid fa-arrow-left"></i> Kembali ke Galeri Lengkap
+            </a>
+        </div>
+    </div>
+</main>
+
+<div id="footer"></div>
+<script src="js/api.js"></script>
+<script src="js/components.js"></script>
+<script src="js/app.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", async () => {
+    const detailContainer = document.getElementById("detailContainer");
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get("id");
+
+    if (!id) {
+        detailContainer.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: red;">ID Galeri tidak ditemukan.</div>`;
+        return;
+    }
+
+    try {
+        const response = await apiFetch(`${API.GALERI.GET_PUBLIC}?id=${id}`);
+        const result = await response.json();
+
+        if (!result.success || !result.data) {
+            detailContainer.innerHTML = `<div style="grid-column: 1/-1; text-align: center;">Data detail galeri tidak ditemukan.</div>`;
+            return;
+        }
+
+        const item = Array.isArray(result.data) 
+            ? result.data.find(d => String(d.id) === String(id)) || result.data[0]
+            : result.data;
+
+        const imgSrc = item.foto_utama 
+            ? `${API.BASE_URL}/assets/galery/berita/${item.foto_utama}` 
+            : 'assets/img/placeholder.jpg';
+
+        let badgeLabel = 'UMKM Warga';
+        if (item.kategori === 'kegiatan') badgeLabel = 'Kegiatan RW';
+        else if (item.kategori === 'ikon' || item.kategori === 'warga') badgeLabel = 'Ikon Warga';
+
+        const waLink = item.kontak 
+            ? `https://wa.me/${item.kontak.replace(/[^0-9]/g, '')}` 
+            : null;
+
+        detailContainer.innerHTML = `
+            <div class="slider-wrapper about-slider" style="border-radius: 12px; overflow: hidden;">
+                <img src="${imgSrc}" alt="${item.judul}" class="slide-img active" style="width: 100%; max-height: 400px; object-fit: cover;">
+            </div>
+
+            <div class="about-info">
+                <span class="category" style="background: var(--accent-yellow); color: var(--dark-text); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700;">
+                    Kategori: ${badgeLabel}
+                </span>
+                <h3 style="margin-top: 15px; color: var(--primary-blue); font-size: 24px;">${item.judul}</h3>
+                <p style="color: var(--text-muted); line-height: 1.8; margin-top: 10px;">
+                    ${item.deskripsi || 'Tidak ada deskripsi rinci untuk item ini.'}
+                </p>
+                ${waLink ? `
+                    <div style="margin-top: 20px;">
+                        <a href="${waLink}" target="_blank" class="btn btn-primary btn-sm">
+                            <i class="fa-brands fa-whatsapp"></i> Hubungi Penjual / Pengurus (${item.kontak})
+                        </a>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    } catch (err) {
+        console.error("Gagal memuat detail:", err);
+        detailContainer.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: red;">Gagal memuat data dari server.</div>`;
+    }
+});
+</script>

@@ -1,0 +1,132 @@
+<div class="crud-card">
+    <!-- Header Section & Filter Tab -->
+    <div class="gallery-page-header" style="margin-bottom: 20px;">
+        <h2 class="gallery-title">Kelola Layanan Warga</h2>
+        <p class="gallery-subtitle">Kelola pengajuan surat, iuran, dan jadwal layanan berbasis WhatsApp</p>
+        
+        <div class="gallery-pill-filter">
+            <button class="pill-btn active" onclick="switchTab('surat', this)">
+                <i class="fa-solid fa-file-signature"></i> Surat Administrasi
+            </button>
+            <button class="pill-btn" onclick="switchTab('iuran', this)">
+                <i class="fa-solid fa-receipt"></i> Pembayaran Iuran
+            </button>
+            <button class="pill-btn" onclick="switchTab('layanan', this)">
+                <i class="fa-solid fa-calendar-check"></i> Kesehatan & Keamanan
+            </button>
+        </div>
+    </div>
+
+    <!-- Actions Bar (Pencarian & Tombol Tambah) -->
+    <div class="crud-header">
+        <div class="header-info">
+            <h3 id="tab-title">Daftar Layanan Surat</h3>
+            <span class="badge-count" id="total-count">0 Data</span>
+        </div>
+        <div class="header-actions">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchLayanan" placeholder="Cari kegiatan..." onkeyup="filterLayananTable()">
+            </div>
+            <button class="btn btn-primary" onclick="openLayananModal()">
+                <i class="fa-solid fa-plus"></i> Tambah Layanan
+            </button>
+        </div>
+    </div>
+
+    <!-- Tabel Data Layanan -->
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Kegiatan / Layanan</th>
+                    <th>Target Wilayah</th>
+                    <th>No. WhatsApp</th>
+                    <th>Gambar / QRIS</th>
+                    <th>Keterangan</th>
+                    <th style="text-align: center;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="layanan-table-body">
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 20px; color: var(--text-muted);">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Memuat data...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- MODAL FORM CRUD LAYANAN -->
+<div id="layananModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 id="modalLayananTitle"><i class="fa-solid fa-pen-to-square"></i> Form Layanan</h4>
+            <button type="button" class="btn-close-modal" onclick="closeLayananModal()">&times;</button>
+        </div>
+        
+        <form id="formLayanan" onsubmit="handleFormSubmit(event)">
+            <div class="modal-body">
+                <input type="hidden" name="id" id="layananId">
+                <input type="hidden" name="jenis_layanan" id="layananJenis" value="surat">
+
+                <div class="form-group">
+                    <label>Nama Kegiatan / Layanan <span style="color:var(--danger-color)">*</span></label>
+                    <input type="text" name="nama_kegiatan" id="namaKegiatan" class="form-control" placeholder="Contoh: Pengantar KTP / Iuran Kebersihan" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Target Wilayah <span style="color:var(--danger-color)">*</span></label>
+                        <select name="target_wilayah" id="targetWilayah" class="form-control" required>
+                            <option value="">-- Pilih Wilayah --</option>
+                            <option value="RT 01">RT 01</option>
+                            <option value="RT 02">RT 02</option>
+                            <option value="RT 03">RT 03</option>
+                            <option value="RT 04">RT 04</option>
+                            <option value="RT 05">RT 05</option>
+                            <option value="RT 06">RT 06</option>
+                            <option value="RT 07">RT 07</option>    
+                            <option value="RT 08">RT 08</option>
+                            <option value="RT 09">RT 09</option>
+                            <option value="RT 10">RT 10</option>
+                            <option value="RT 11">RT 11</option>
+                            <option value="Ketua RW">Ketua RW</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nomor WhatsApp Admin <span style="color:var(--danger-color)">*</span></label>
+                        <input type="text" name="nomor_telepon" id="nomorTelepon" class="form-control" placeholder="08123456789" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Keterangan / Syarat <span style="color:var(--text-muted); font-weight:normal;">(Opsional)</span></label>
+                    <textarea name="keterangan" id="keteranganLayanan" class="form-control" placeholder="Tambahkan catatan atau persyaratan..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Gambar Umum (.WebP / Image)</label>
+                        <input type="file" name="gambar_umum" id="gambarUmum" class="form-control" accept="image/*">
+                    </div>
+
+                    <div class="form-group" id="groupQris" style="display: none;">
+                        <label>Gambar QRIS (.WebP / Image)</label>
+                        <input type="file" name="gambar_qris" id="gambarQris" class="form-control" accept="image/*">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeLayananModal()">Batal</button>
+                <button type="submit" class="btn btn-primary" id="btnSubmitLayanan">
+                    <i class="fa-solid fa-floppy-disk"></i> Simpan Data
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

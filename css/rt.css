@@ -1,0 +1,215 @@
+/* ==========================================================================
+   CSS MODERN RT PORTRAIT INFINITE SLIDER - VIRETA 2
+   ========================================================================== */
+
+:root {
+  --rt-bg-track: #f8fafc;
+  --rt-card-bg: #ffffff;
+  --rt-card-border: rgba(226, 232, 240, 0.8);
+  --rt-text-title: #0f172a;
+  --rt-text-name: #1e293b;
+  --rt-text-muted: #64748b;
+  --rt-accent: #0284c7;
+  --rt-card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.06), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+  --rt-card-hover-shadow: 0 20px 35px -8px rgba(2, 132, 199, 0.2);
+  --rt-badge-bg: rgba(2, 132, 199, 0.1);
+  --rt-badge-text: #0284c7;
+  --rt-btn-bg: #f0f9ff;
+}
+
+[data-theme="dark"] {
+  --rt-bg-track: #0b1120;
+  --rt-card-bg: #1e293b;
+  --rt-card-border: rgba(255, 255, 255, 0.08);
+  --rt-text-title: #f8fafc;
+  --rt-text-name: #e2e8f0;
+  --rt-text-muted: #94a3b8;
+  --rt-accent: #38bdf8;
+  --rt-card-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5), 0 8px 12px -3px rgba(0, 0, 0, 0.3);
+  --rt-card-hover-shadow: 0 20px 40px -5px rgba(56, 189, 248, 0.25);
+  --rt-badge-bg: rgba(56, 189, 248, 0.15);
+  --rt-badge-text: #38bdf8;
+  --rt-btn-bg: rgba(56, 189, 248, 0.1);
+}
+
+.rt-pill-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--rt-badge-bg);
+  color: var(--rt-badge-text);
+  padding: 6px 16px;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  border: 1px solid var(--rt-card-border);
+}
+
+/* Viewport Carousel */
+.rt-carousel-viewport {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  padding: 15px 0 25px;
+  cursor: grab;
+}
+
+.rt-carousel-viewport:active {
+  cursor: grabbing;
+}
+
+/* Track Lintasan (Animasi diatur oleh requestAnimationFrame via JS agar presisi) */
+.rt-track {
+  display: flex;
+  gap: 24px;
+  width: max-content;
+  will-change: transform;
+}
+
+/* Card Kotak Portrait */
+.member-card-modern {
+  flex: 0 0 300px;
+  width: 300px;
+  background: var(--rt-card-bg);
+  border: 1px solid var(--rt-card-border);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: var(--rt-card-shadow);
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+}
+
+.member-card-modern:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--rt-card-hover-shadow);
+  border-color: var(--rt-accent);
+}
+
+/* Foto Portrait Kotak Besar */
+.rt-card-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  overflow: hidden;
+  background: #0f172a;
+}
+
+.rt-portrait-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: transform 0.5s ease;
+  pointer-events: none;
+}
+
+.member-card-modern:hover .rt-portrait-img {
+  transform: scale(1.05);
+}
+
+/* Floating Badge */
+.rt-banner-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #ffffff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Body Info */
+.rt-card-body {
+  padding: 18px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.rt-card-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--rt-text-title);
+  margin: 0 0 4px;
+}
+
+.rt-leader-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--rt-text-name);
+  margin: 0 0 12px;
+}
+
+.rt-contact-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--rt-text-muted);
+  background: var(--rt-btn-bg);
+  padding: 8px 12px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  text-decoration: none;
+  border: 1px solid var(--rt-card-border);
+}
+
+.rt-contact-pill i {
+  color: #22c55e;
+}
+
+.rt-card-btn {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  background: transparent;
+  color: var(--rt-accent);
+  border: 1.5px solid var(--rt-accent);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.member-card-modern:hover .rt-card-btn {
+  background: var(--rt-accent);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .member-card-modern:hover .rt-card-btn {
+  color: #0b1120;
+}
+
+/* ==========================================================================
+   RESPONSIVE HP (1 KARTU PER TAMPILAN)
+   ========================================================================== */
+@media (max-width: 640px) {
+  .rt-track {
+    gap: 16px;
+  }
+
+  .member-card-modern {
+    flex: 0 0 calc(100vw - 48px); /* Card pas memenuhi lebar layar dengan margin rapi */
+    width: calc(100vw - 48px);
+    border-radius: 16px;
+  }
+
+  .rt-card-img-wrap {
+    height: 290px;
+  }
+}

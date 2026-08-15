@@ -1,27 +1,32 @@
-<section class="news">
-
+<section class="news-showcase-section" id="berita">
     <div class="container">
-
-        <div class="section-header">
-
-            <h2 class="section-title">
-
-                Pengumuman & Berita
-
-            </h2>
-
-            <p class="section-subtitle">
-
-                Informasi terbaru untuk seluruh warga.
-
-            </p>
-
+        <div class="section-header text-center">
+            <span class="news-pill-badge">
+                <i class="fa-solid fa-newspaper"></i> Warta Lingkungan
+            </span>
+            <h2 class="section-title">Pengumuman & Berita</h2>
+            <p class="section-subtitle">"Kabar Terbaru dan Informasi Penting Seputar Vireta 2"</p>
         </div>
 
-        <div id="newsContainer" class="news-grid">
+        <!-- Single Page Showcase Stage -->
+        <div class="news-showcase-viewport">
+            <div id="newsContainer" class="news-stage"></div>
 
+            <!-- Tombol Navigasi Panah di Ujung Kanan -->
+            <div class="news-nav-controls">
+                <button class="news-arrow-btn" id="newsPrevBtn" aria-label="Berita Sebelumnya">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button class="news-arrow-btn" id="newsNextBtn" aria-label="Berita Selanjutnya">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
         </div>
 
+        <div class="text-center margin-top-30">
+            <a href="berita-lengkap.html" class="btn btn-outline-archive">
+                <i class="fa-solid fa-folder-open"></i> Arsip Berita Selengkapnya
+            </a>
+        </div>
     </div>
-
 </section>

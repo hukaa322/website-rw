@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tentang Desa - Vireta 2</title>
+    
+    <!-- Google Fonts & Font Awesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <!-- CSS Proyek -->
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/cards.css">
+    <link rel="stylesheet" href="css/style-landing.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<!-- Layout Navbar & Bottom Nav Dinamis -->
+<div id="navbar"></div>
+<div id="bottom-nav"></div>
+
+<main class="section-padding margin-top-40">
+    <div class="container">
+        <!-- Header Halaman -->
+        <div class="section-header text-center">
+            <h2 class="section-title">Profil Lengkap Vireta 2</h2>
+            <p class="section-subtitle">Villa Regensi Tangerang 2 - Harmonis, Aman, dan Digital</p>
+        </div>
+
+        <!-- Section 1: Tagline & Gambar Utama -->
+        <div class="about-grid margin-bottom-30">
+            <div class="slider-wrapper about-slider">
+                <img src="assets/img/tentang-1.jpg" alt="Suasana Perumahan Vireta 2" class="slide-img active">
+                <img src="assets/img/tentang-2.jpg" alt="Kegiatan Warga Vireta 2" class="slide-img">
+                <div class="slider-controls">
+                    <button class="prev-slide"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button class="next-slide"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+            
+            <div class="about-info">
+                <h3>Visi & Tagline</h3>
+                <blockquote style="border-left: 4px solid var(--accent-yellow); padding-left: 15px; font-style: italic; color: var(--text-muted); margin-bottom: 15px;">
+                    "Bersama Mewujudkan Lingkungan Asri, Aman, dan Berteknologi untuk Kesejahteraan Warga Villa Regensi Tangerang 2."
+                </blockquote>
+                <p>
+                    Villa Regensi Tangerang 2 merupakan salah satu kawasan pemukiman yang terus berkembang menjadi lingkungan modern yang ramah keluarga, tertata rapi, dan mengedepankan gotong royong.
+                </p>
+            </div>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid var(--border-color); margin: 40px 0;">
+
+        <!-- Section 2: Sejarah Singkat -->
+        <div class="margin-bottom-30">
+            <h3 style="color: var(--primary-blue); font-size: 22px; margin-bottom: 15px;">
+                <i class="fa-solid fa-hourglass-start"></i> Sejarah Perumahan
+            </h3>
+            <p style="color: var(--text-muted); line-height: 1.8;">
+                Perumahan Villa Regensi Tangerang 2 didirikan sebagai kawasan hunian ideal yang strategis. Seiring berjalannya waktu, partisipasi aktif warga dalam membentuk struktur keorganisasian RT/RW telah mendorong berbagai pembenahan fasilitas publik, keamanan 24 jam, serta ruang terbuka hijau.
+            </p>
+        </div>
+
+        <!-- Section 3: Lokasi & Rekap Keunggulan -->
+        <div class="margin-bottom-30">
+            <h3 style="color: var(--primary-blue); font-size: 22px; margin-bottom: 15px;">
+                <i class="fa-solid fa-star"></i> Rekap Keunggulan Desa
+            </h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+                <div style="background: white; padding: 20px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); border-top: 3px solid var(--primary-blue);">
+                    <i class="fa-solid fa-shield-halved" style="font-size: 24px; color: var(--primary-blue); margin-bottom: 10px;"></i>
+                    <h4>Keamanan 24/7</h4>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Sistem satu pintu (*one gate system*) dan ronda berkala.</p>
+                </div>
+                <div style="background: white; padding: 20px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); border-top: 3px solid var(--accent-yellow);">
+                    <i class="fa-solid fa-store" style="font-size: 24px; color: var(--accent-yellow-hover); margin-bottom: 10px;"></i>
+                    <h4>UMKM Mandiri</h4>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Pemberdayaan ekonomi warga melalui bazar dan produk lokal.</p>
+                </div>
+                <div style="background: white; padding: 20px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); border-top: 3px solid var(--accent-red);">
+                    <i class="fa-solid fa-wifi" style="font-size: 24px; color: var(--accent-red); margin-bottom: 10px;"></i>
+                    <h4>Layanan Digital</h4>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Pengurusan surat & informasi terpusat via web resmi.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tombol Kembali ke Landing Page -->
+        <div class="text-center margin-top-40">
+            <a href="index.html" class="btn btn-primary">
+                <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda
+            </a>
+        </div>
+
+    </div>
+</main>
+
+<!-- Layout Footer -->
+<div id="footer"></div>
+
+<!-- JavaScript Component Loaders -->
+<script src="js/components.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

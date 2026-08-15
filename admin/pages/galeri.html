@@ -1,0 +1,102 @@
+<div class="crud-card">
+    <!-- Header & Pill Filter Tab -->
+    <div class="gallery-page-header" style="margin-bottom: 20px;">
+        <h2 class="gallery-title">Galeri Warga & UMKM</h2>
+        <p class="gallery-subtitle">"Daya Cipta, Usaha Lokal, dan Kebersamaan Warga Vireta 2"</p>
+        
+        <div class="gallery-pill-filter">
+            <button class="pill-btn active" onclick="switchGaleriTab('umkm', this)">
+                <i class="fa-solid fa-store"></i> UMKM Warga
+            </button>
+            <button class="pill-btn" onclick="switchGaleriTab('kegiatan', this)">
+                <i class="fa-solid fa-camera-retro"></i> Kegiatan RW
+            </button>
+            <button class="pill-btn" onclick="switchGaleriTab('ikon', this)">
+                <i class="fa-solid fa-user-tie"></i> Ikon Warga
+            </button>
+        </div>
+    </div>
+
+    <!-- Actions Bar (Pencarian & Tombol Tambah Dinamis) -->
+    <div class="crud-header">
+        <div class="header-info">
+            <h3 id="galeri-tab-title">Daftar UMKM Warga</h3>
+            <span class="badge-count" id="galeri-total-count">0 Data</span>
+        </div>
+        <div class="header-actions">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchGaleri" placeholder="Cari data..." onkeyup="filterGaleriTable()">
+            </div>
+            <button class="btn btn-primary" id="btn-tambah-galeri" onclick="openGaleriModal()">
+                <i class="fa-solid fa-plus"></i> <span id="label-btn-tambah">Tambah UMKM</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Tabel Data Dinamis -->
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th style="width: 80px;">Foto</th>
+                    <th id="th-judul">Nama UMKM</th>
+                    <th id="th-deskripsi">Deskripsi</th>
+                    <th id="th-kontak">Kontak WA</th>
+                    <th style="text-align: center; width: 160px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="galeri-table-body">
+                <tr>
+                    <td colspan="5" style="text-align: center; padding: 20px; color: var(--text-muted);">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Memuat data...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- MODAL FORM CRUD GALERI (MENYESUAIKAN TAB OTOMATIS) -->
+<div id="galeriModal" class="modal-backdrop" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 id="modalGaleriTitle"><i class="fa-solid fa-pen-to-square"></i> Form Galeri</h4>
+            <button type="button" class="btn-close-modal" onclick="closeGaleriModal()">&times;</button>
+        </div>
+        
+        <form id="formGaleri" onsubmit="handleGaleriSubmit(event)">
+            <div class="modal-body">
+                <input type="hidden" name="id" id="galeriId">
+                <input type="hidden" name="kategori" id="galeriKategori" value="umkm">
+
+                <div class="form-group">
+                    <label id="formLabelJudul">Nama UMKM <span style="color:var(--danger-color)">*</span></label>
+                    <input type="text" name="judul" id="galeriJudul" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label id="formLabelKontak">No. WhatsApp / Kontak</label>
+                    <input type="text" name="kontak" id="galeriKontak" class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label id="formLabelDeskripsi">Deskripsi</label>
+                    <textarea name="deskripsi" id="galeriDeskripsi" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label id="formLabelFoto">Foto Utama (.WebP / Gambar)</label>
+                    <input type="file" id="galeriFoto" class="form-control" accept="image/*">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeGaleriModal()">Batal</button>
+                <button type="submit" class="btn btn-primary" id="btnSubmitGaleri">
+                    <i class="fa-solid fa-floppy-disk"></i> Simpan Data
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

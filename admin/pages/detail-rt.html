@@ -1,0 +1,182 @@
+<div class="crud-card">
+  <div class="crud-header">
+    <h3><i class="fa-solid fa-users-gear"></i> Kelola Data Detail RT</h3>
+    <button class="btn btn-primary btn-sm" onclick="window.openRtModal()">
+      <i class="fa-solid fa-plus"></i> Tambah / Edit RT
+    </button>
+  </div>
+
+  <!-- Table Content -->
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>No RT</th>
+        <th>Foto Utama</th>
+        <th>Nama Ketua RT</th>
+        <th>No. Telp</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody id="rtTableBody">
+      <!-- Render via JS -->
+    </tbody>
+  </table>
+</div>
+
+<!-- Modal Form CRUD RT -->
+<div
+  id="rtModal"
+  class="modal-overlay"
+  style="
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  "
+>
+  <div
+    class="modal-content"
+    style="
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 500px;
+    "
+  >
+    <div
+      class="modal-header"
+      style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+      "
+    >
+      <h4 id="modalTitle" style="margin: 0">Form Informasi RT</h4>
+      <button
+        class="close-btn"
+        onclick="window.closeRtModal()"
+        style="border: none; background: none; font-size: 20px; cursor: pointer"
+      >
+        &times;
+      </button>
+    </div>
+
+    <form
+      id="rtForm"
+      enctype="multipart/form-data"
+      onsubmit="window.saveRtData(event)"
+    >
+      <input type="hidden" id="rtId" name="id" />
+
+      <div class="form-group" style="margin-bottom: 12px">
+        <label>Pilih Nomor RT (1 - 11)</label>
+        <select
+          id="nomor_rt"
+          name="nomor_rt"
+          required
+          style="width: 100%; padding: 8px"
+        >
+          <option value="">-- Pilih RT --</option>
+          <option value="1">RT 01</option>
+          <option value="2">RT 02</option>
+          <option value="3">RT 03</option>
+          <option value="4">RT 04</option>
+          <option value="5">RT 05</option>
+          <option value="6">RT 06</option>
+          <option value="7">RT 07</option>
+          <option value="8">RT 08</option>
+          <option value="9">RT 09</option>
+          <option value="10">RT 10</option>
+          <option value="11">RT 11</option>
+        </select>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 12px">
+        <label>Nama Ketua RT</label>
+        <input
+          type="text"
+          id="nama_ketua"
+          name="nama_ketua"
+          placeholder="Nama Lengkap"
+          required
+          style="width: 100%; padding: 8px"
+        />
+      </div>
+
+      <div class="form-group" style="margin-bottom: 12px">
+        <label>Masa Jabatan</label>
+        <input
+          type="text"
+          id="masa_jabatan"
+          name="masa_jabatan"
+          placeholder="Contoh: 2024 - 2027"
+          style="width: 100%; padding: 8px"
+        />
+      </div>
+
+      <div class="form-group" style="margin-bottom: 12px">
+        <label>Nomor Telepon / WA</label>
+        <input
+          type="text"
+          id="nomor_telepon"
+          name="nomor_telepon"
+          placeholder="08xxxxxxxxxx"
+          required
+          style="width: 100%; padding: 8px"
+        />
+      </div>
+
+      <div class="form-group" style="margin-bottom: 12px">
+        <label>Ringkasan RT</label>
+        <textarea
+          id="ringkasan"
+          name="ringkasan"
+          rows="3"
+          style="width: 100%; padding: 8px"
+        ></textarea>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 12px">
+        <label>Foto Utama (Otomatis Diubah ke WEBP)</label>
+        <input
+          type="file"
+          id="foto_utama"
+          name="foto_utama"
+          accept="image/*"
+          style="width: 100%"
+        />
+      </div>
+
+      <div class="form-group" style="margin-bottom: 12px">
+        <label>Foto Pendukung (Otomatis Diubah ke WEBP)</label>
+        <input
+          type="file"
+          id="foto_pendukung"
+          name="foto_pendukung"
+          accept="image/*"
+          multiple
+          style="width: 100%"
+        />
+      </div>
+
+      <div style="text-align: right; margin-top: 15px">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onclick="window.closeRtModal()"
+        >
+          Batal
+        </button>
+        <button type="submit" class="btn btn-primary">Simpan Data</button>
+      </div>
+    </form>
+  </div>
+</div>

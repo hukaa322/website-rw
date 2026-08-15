@@ -1,0 +1,4 @@
+RewriteEngine On
+
+# Mengarahkan /login ke folder /login/index.html
+RewriteRule ^login/?$ login/index.html [L]

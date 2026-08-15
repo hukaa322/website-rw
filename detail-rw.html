@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil & Kepengurusan RW - Vireta 2</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/navbar.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/cards.css">
+    <link rel="stylesheet" href="css/rw.css">
+    <link rel="stylesheet" href="css/style-landing.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<div id="navbar"></div>
+<div id="bottom-nav"></div>
+
+<main class="section-padding margin-top-40 rw-detail-page">
+    <div class="container">
+        <!-- Header Halaman -->
+        <div class="section-header text-center">
+            <span class="rw-pill-badge">
+                <i class="fa-solid fa-users-viewfinder"></i> Direktori Kepengurusan
+            </span>
+            <h2 class="section-title">Struktur & Histori Kepemimpinan RW 05</h2>
+            <p class="section-subtitle">Daftar rekam jejak pengurus aktif dan para tokoh RW dari masa ke masa</p>
+        </div>
+
+        <!-- CONTAINER GRID DINAMIS -->
+        <div id="rwDetailWrapper">
+            <div class="rw-loading-box" style="text-align: center; padding: 50px 0;">
+                <i class="fa-solid fa-spinner fa-spin fa-2x" style="color: #0066cc;"></i>
+                <p style="margin-top: 12px; color: #64748b; font-weight: 600;">Memuat struktur RW dari database...</p>
+            </div>
+        </div>
+
+        <!-- Tombol Navigasi Kembali -->
+        <div class="text-center margin-top-40" style="margin-top: 50px;">
+            <a href="index.html" class="btn btn-outline-primary" style="padding: 12px 28px; border-radius: 99px;">
+                <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda
+            </a>
+        </div>
+    </div>
+</main>
+
+<div id="footer"></div>
+
+<script src="js/api.js"></script>
+<script src="js/detail-rw.js"></script>
+<script src="js/components.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

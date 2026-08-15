@@ -1,0 +1,82 @@
+<div class="crud-card">
+    <div class="crud-header">
+        <h3><i class="fa-solid fa-newspaper"></i> Kelola Pengumuman & Berita</h3>
+        <button id="btn-tambah-berita" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-plus"></i> Buat Berita Baru
+        </button>
+    </div>
+
+    <!-- Tabel Data Berita -->
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Judul</th>
+                <th>Kategori</th>
+                <th>Tanggal</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody id="berita-list-body">
+            <tr>
+                <td colspan="4" style="text-align: center; padding: 1.5rem;">
+                    <i class="fa-solid fa-spinner fa-spin"></i> Memuat data berita...
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- MODAL FORM (TAMBAH / EDIT BERITA) -->
+<div id="modal-berita" class="modal-backdrop" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h4 id="modal-berita-title"><i class="fa-solid fa-newspaper"></i> Buat Berita Baru</h4>
+            <button type="button" class="btn-close-modal" id="btn-close-modal">&times;</button>
+        </div>
+        <form id="form-berita" enctype="multipart/form-data">
+            <div class="modal-body">
+                <input type="hidden" id="berita-id" name="id">
+
+                <div class="form-group">
+                    <label for="judul">Judul Berita / Pengumuman *</label>
+                    <input type="text" id="judul" name="judul" class="form-control" placeholder="Contoh: Kerja Bakti Masal RW 05" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="kategori">Kategori *</label>
+                        <select id="kategori" name="kategori" class="form-control" required>
+                            <option value="Kegiatan">Kegiatan</option>
+                            <option value="Pengumuman">Pengumuman</option>
+                            <option value="Berita Utama">Berita Utama</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tanggal">Tanggal *</label>
+                        <input type="date" id="tanggal" name="tanggal" class="form-control" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="isi_berita">Isi Berita / Detail Pengumuman</label>
+                    <textarea id="isi_berita" name="isi_berita" class="form-control" rows="4" placeholder="Tuliskan detail berita atau pengumuman di sini..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="foto_utama">Foto Utama (.WebP / Image)</label>
+                    <input type="file" id="foto_utama" name="foto_utama" class="form-control" accept="image/*">
+                    <small style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px;">Foto akan otomatis dikonversi ke format .WebP sebelum disimpan.</small>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btn-batal-modal">Batal</button>
+                <button type="submit" class="btn btn-primary" id="btn-simpan-berita">
+                    <i class="fa-solid fa-save"></i> Simpan Data
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
