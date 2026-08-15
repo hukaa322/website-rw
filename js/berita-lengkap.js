@@ -57,6 +57,8 @@ function renderFilteredNews() {
         return;
     }
 
+    const baseUrl = (window.API && window.API.BASE_URL) ? window.API.BASE_URL : '';
+
     grid.innerHTML = filtered.map((item) => {
         const formattedDate = new Date(item.tanggal).toLocaleDateString("id-ID", {
             day: "numeric",
@@ -64,13 +66,17 @@ function renderFilteredNews() {
             year: "numeric"
         });
 
+        // PERBAIKAN PATH: Diubah mengarah ke /assets/galery/berita/
         const imageUrl = item.foto_utama 
-            ? (item.foto_utama.startsWith('http') ? item.foto_utama : `${window.API.BASE_URL}/assets/galery/rt/${item.foto_utama}`)
+            ? (item.foto_utama.startsWith('http') ? item.foto_utama : `${baseUrl}/assets/galery/berita/${item.foto_utama}`)
             : 'assets/img/default-news.jpg';
 
         return `
             <div class="news-card">
-                <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(item.judul)}" class="news-thumb" onerror="this.src='assets/img/default-news.jpg'">
+                <img src="${escapeHtml(imageUrl)}" 
+                     alt="${escapeHtml(item.judul)}" 
+                     class="news-thumb" 
+                     onerror="this.onerror=null; this.src='assets/galery/berita/${item.foto_utama}';">
                 <div class="news-body">
                     <span class="news-category">${escapeHtml(item.kategori || "Pengumuman")}</span>
                     <h3 class="news-title">${escapeHtml(item.judul)}</h3>
@@ -83,7 +89,6 @@ function renderFilteredNews() {
         `;
     }).join("");
 }
-
 // Event Listeners untuk Search dan Filter
 function bindFilterEvents() {
     const searchInput = document.getElementById("searchInput");

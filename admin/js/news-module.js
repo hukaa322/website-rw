@@ -68,23 +68,34 @@
     }
 
     // Render Baris Tabel
+// Render Baris Tabel
     function renderTable(dataList) {
         if (!dataList || dataList.length === 0) {
             tableBody.innerHTML = `
                 <tr>
-                    <td colspan="4" style="text-align: center; padding: 1.5rem;">
+                    <td colspan="5" style="text-align: center; padding: 1.5rem;">
                         Belum ada data berita atau pengumuman.
                     </td>
                 </tr>`;
             return;
         }
 
+        const baseUrl = (window.API && window.API.BASE_URL) ? window.API.BASE_URL : '';
+
         tableBody.innerHTML = dataList.map((item) => {
             const formattedDate = formatDate(item.tanggal);
             const safeItemJson = encodeURIComponent(JSON.stringify(item));
 
+            // Kolom Foto dengan Fallbackonerror
+            const fotoImg = item.foto_utama 
+                ? `<img src="${baseUrl}/assets/galery/berita/${item.foto_utama}" 
+                        style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px;" 
+                        onerror="this.onerror=null; this.src='../assets/galery/berita/${item.foto_utama}';">` 
+                : '<span style="color:#aaa;">Tanpa Foto</span>';
+
             return `
                 <tr>
+                    <td>${fotoImg}</td>
                     <td><strong>${escapeHtml(item.judul)}</strong></td>
                     <td><span class="badge badge-info">${escapeHtml(item.kategori)}</span></td>
                     <td>${formattedDate}</td>
@@ -132,17 +143,69 @@
         form.reset();
     }
 
+    // Helper Canvas Browser: Konversi File Gambar ke Format WebP
+    async function convertToWebP(file, quality = 0.8) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0);
+
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            const originalName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+                            const webpFileName = `${originalName}.webp`;
+                            const convertedFile = new File([blob], webpFileName, {
+                                type: "image/webp",
+                                lastModified: Date.now()
+                            });
+                            resolve(convertedFile);
+                        } else {
+                            reject(new Error("Gagal konversi ke WebP"));
+                        }
+                    }, "image/webp", quality);
+                };
+                img.onerror = (err) => reject(err);
+            };
+            reader.onerror = (err) => reject(err);
+        });
+    }
+
     // 3. Submit Form (Save / Update)
     async function handleFormSubmit(e) {
         e.preventDefault();
 
-        const formData = new FormData(form);
+        const formData = new FormData();
+        
+        // Salin input non-file dari form
+        const inputs = form.querySelectorAll("input:not([type='file']), select, textarea");
+        inputs.forEach((input) => {
+            if (input.name) {
+                formData.append(input.name, input.value);
+            }
+        });
+
         const submitBtn = document.getElementById("btn-simpan-berita");
         const originalText = submitBtn.innerHTML;
 
         try {
             submitBtn.disabled = true;
             submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...`;
+
+            // Konversi foto_utama jika diunggah
+            const fotoUtamaInput = document.getElementById("foto_utama");
+            if (fotoUtamaInput && fotoUtamaInput.files.length > 0) {
+                const file = fotoUtamaInput.files[0];
+                const webpFile = await convertToWebP(file);
+                formData.append("foto_utama", webpFile);
+            }
 
             const res = await window.apiFetch(window.API.BERITA.SAVE, {
                 method: "POST",

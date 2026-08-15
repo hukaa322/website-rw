@@ -29,6 +29,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     await loadComponent("galeri", "pages/galeri.html");
     await loadComponent("layanan", "pages/layanan.html");
 
+    // SETELAH DILUAT: Panggil fungsi render berita secara manual
+    if (typeof loadHomeNews === "function") {
+        loadHomeNews();
+    }
+
     // Fitur Smooth Scroll dengan Offset Height Navbar
     initSmoothScroll();
 });

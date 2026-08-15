@@ -58,9 +58,12 @@ function initPageEvents(hash) {
             window.NewsModule.init();
         }
     } else if (hash === "#/layanan") {
-        // TAMBAHKAN INISIALISASI UNTUK LAYANAN DI SINI
         if (window.LayananModule && typeof window.LayananModule.init === "function") {
             window.LayananModule.init();
+        }
+    } else if (hash === "#/galeri") {
+        if (typeof window.loadGaleriData === "function") {
+            window.loadGaleriData();
         }
     }
 }

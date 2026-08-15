@@ -1,0 +1,785 @@
+/* ==========================================================================
+   1. DESIGN TOKENS & SYSTEM VARIABLES (LIGHT & DARK THEME)
+   ========================================================================== */
+:root {
+    /* Color Palette */
+    --rw-bg-gradient: radial-gradient(circle at 85% 50%, rgba(0, 102, 204, 0.08) 0%, rgba(248, 250, 252, 1) 75%);
+    --rw-card-bg: #ffffff;
+    --rw-stat-bg: #f8fafc;
+    --rw-border-color: rgba(226, 232, 240, 0.9);
+    --rw-text-headline: #1e293b;
+    --rw-text-sub: #64748b;
+    --rw-primary: #0066cc;
+    --rw-primary-light: #e6f0fa;
+    --rw-primary-glow: rgba(0, 102, 204, 0.35);
+    --rw-primary-glow-active: rgba(0, 102, 204, 0.65);
+    --rw-primary-subtle: rgba(0, 102, 204, 0.1);
+    
+    /* Status Badge Colors */
+    --rw-status-active-bg: #0066cc;
+    --rw-status-active-text: #ffffff;
+    --rw-status-demis-bg: #64748b;
+    --rw-status-demis-text: #ffffff;
+
+    --rw-orbit-line: rgba(0, 102, 204, 0.25);
+    --rw-orbit-inner: rgba(0, 102, 204, 0.05);
+    --rw-card-shadow: 0 15px 35px rgba(15, 23, 42, 0.05);
+    --rw-hub-border: #ffffff;
+
+    /* Dimensi Stage Jumbo (Desktop) */
+    --rw-stage-size: 620px;
+    --rw-orbit-radius: 245px;
+    --rw-hub-size: 310px;
+    --rw-hub-img: 175px;        /* Foto utama jumbo */
+    --rw-satellite-size: 130px;
+    --rw-satellite-img: 68px;   /* Foto satelit besar */
+
+    /* Animation Timings */
+    --rw-anim-duration: 38s;
+    --rw-swap-time: 0.8s;
+    --rw-ease-elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --rw-ease-damp: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark Mode Theme */
+[data-theme="dark"] {
+    --rw-bg-gradient: radial-gradient(circle at 85% 50%, rgba(0, 102, 204, 0.18) 0%, #0b132b 85%);
+    --rw-card-bg: #131c36;
+    --rw-stat-bg: #1a2544;
+    --rw-border-color: rgba(255, 255, 255, 0.1);
+    --rw-text-headline: #f1f5f9;
+    --rw-text-sub: #94a3b8;
+    --rw-primary: #38bdf8;
+    --rw-primary-light: rgba(56, 189, 248, 0.15);
+    --rw-primary-glow: rgba(56, 189, 248, 0.35);
+    --rw-primary-glow-active: rgba(56, 189, 248, 0.7);
+    --rw-primary-subtle: rgba(56, 189, 248, 0.15);
+    --rw-status-active-bg: #0284c7;
+    --rw-status-demis-bg: #475569;
+    --rw-orbit-line: rgba(56, 189, 248, 0.3);
+    --rw-orbit-inner: rgba(56, 189, 248, 0.12);
+    --rw-card-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    --rw-hub-border: #1a2544;
+}
+
+/* ==========================================================================
+   2. SECTION & 2-COLUMN GRID
+   ========================================================================== */
+.rw-section-bg {
+    position: relative;
+    background: var(--rw-bg-gradient);
+    overflow: hidden;
+    padding: 70px 0;
+    transition: background 0.4s ease;
+}
+
+.rw-header {
+    margin-bottom: 40px;
+}
+
+.rw-main-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr;
+    align-items: center;
+    gap: 40px;
+    position: relative;
+    width: 100%;
+}
+
+/* ==========================================================================
+   3. KOLOM KIRI: NARASI & STATISTIK
+   ========================================================================== */
+.rw-narrative-card {
+    background: var(--rw-card-bg);
+    border: 1px solid var(--rw-border-color);
+    padding: 36px 32px;
+    border-radius: 24px;
+    box-shadow: var(--rw-card-shadow);
+    transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.rw-pill-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--rw-primary-subtle);
+    color: var(--rw-primary);
+    padding: 6px 16px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.rw-headline {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--rw-text-headline);
+    line-height: 1.35;
+    margin-bottom: 12px;
+}
+
+.rw-description {
+    font-size: 15px;
+    color: var(--rw-text-sub);
+    line-height: 1.7;
+    margin-bottom: 24px;
+}
+
+.rw-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 26px;
+}
+
+.rw-stat-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--rw-stat-bg);
+    border: 1px solid var(--rw-border-color);
+    padding: 12px 16px;
+    border-radius: 14px;
+}
+
+.stat-icon-wrap {
+    width: 42px;
+    height: 42px;
+    background: var(--rw-primary);
+    color: #ffffff;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.stat-number {
+    display: block;
+    font-weight: 800;
+    font-size: 15px;
+    color: var(--rw-text-headline);
+}
+
+.stat-label {
+    display: block;
+    font-size: 11.5px;
+    color: var(--rw-text-sub);
+}
+
+.btn-glow {
+    box-shadow: 0 6px 20px rgba(0, 102, 204, 0.3);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.btn-glow:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0, 102, 204, 0.45);
+}
+
+/* ==========================================================================
+   4. KOLOM KANAN: ORBIT STAGE ENGINE
+   ========================================================================== */
+.rw-stage-col {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--rw-stage-size);
+    width: 100%;
+}
+
+.rw-dynamic-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.rw-orbit-stage {
+    position: relative;
+    width: var(--rw-stage-size);
+    height: var(--rw-stage-size);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: pan-y;
+}
+
+/* Lintasan Putaran */
+.orbit-track {
+    position: absolute;
+    width: calc(var(--rw-orbit-radius) * 2);
+    height: calc(var(--rw-orbit-radius) * 2);
+    border-radius: 50%;
+    border: 2.5px dashed var(--rw-orbit-line);
+    box-shadow: inset 0 0 45px var(--rw-orbit-inner);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* ==========================================================================
+   5. CENTER HUB (JUMBO CENTER CARD: FOTO + STATUS + NAMA + MASA JABATAN)
+   ========================================================================== */
+.rw-center-hub {
+    position: absolute;
+    width: var(--rw-hub-size);
+    height: var(--rw-hub-size);
+    border-radius: 50%;
+    background: var(--rw-card-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 14px;
+    z-index: 15;
+    box-shadow: 0 16px 45px rgba(15, 23, 42, 0.08);
+    border: 6px solid var(--rw-hub-border);
+    transition: box-shadow 0.5s ease, background 0.3s ease;
+    cursor: default;
+}
+
+.rw-center-hub.glow-active {
+    box-shadow: 0 0 55px var(--rw-primary-glow-active), 0 14px 35px rgba(0, 0, 0, 0.1);
+}
+
+/* 1. Foto Profil Jumbo */
+.rw-center-img-wrap {
+    width: var(--rw-hub-img);
+    height: var(--rw-hub-img);
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 8px;
+    border: 3.5px solid var(--rw-primary);
+    box-shadow: 0 6px 18px rgba(0, 102, 204, 0.2);
+    flex-shrink: 0;
+}
+
+.rw-center-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* 2. Status Badge Dinamis */
+.rw-center-badge {
+    background: var(--rw-status-active-bg);
+    color: var(--rw-status-active-text);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 14px;
+    border-radius: 99px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 3px;
+    transition: background 0.3s ease;
+}
+
+.rw-center-badge.is-demisioner {
+    background: var(--rw-status-demis-bg);
+    color: var(--rw-status-demis-text);
+}
+
+/* 3. Nama Tokoh */
+.rw-center-name {
+    font-size: 16.5px;
+    font-weight: 800;
+    color: var(--rw-text-headline);
+    margin: 1px 0;
+    max-width: 90%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 4. Masa Jabatan & Peran */
+.rw-center-role {
+    font-size: 12px;
+    color: var(--rw-text-sub);
+    font-weight: 600;
+}
+
+.rw-center-periode {
+    font-size: 11px;
+    color: var(--rw-primary);
+    font-weight: 700;
+    margin-top: 1px;
+}
+
+/* ==========================================================================
+   6. ORBIT ROTATOR & SATELIT (BERPUTAR KONTINU)
+   ========================================================================== */
+.orbit-rotator {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    animation: rotateOrbitContinuous var(--rw-anim-duration) linear infinite;
+}
+
+.orbit-satellite-anchor {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    transform: rotate(var(--orbit-angle, 0deg)) translate(var(--rw-orbit-radius)) rotate(calc(-1 * var(--orbit-angle, 0deg)));
+    will-change: transform;
+}
+
+.orbit-satellite-card {
+    position: absolute;
+    width: var(--rw-satellite-size);
+    height: var(--rw-satellite-size);
+    top: calc(var(--rw-satellite-size) / -2);
+    left: calc(var(--rw-satellite-size) / -2);
+    border-radius: 50%;
+    background: var(--rw-card-bg);
+    border: 3px solid var(--rw-border-color);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.09);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6px;
+    cursor: pointer;
+    pointer-events: auto;
+    animation: counterRotateOrbit var(--rw-anim-duration) linear infinite;
+    transition: transform 0.3s var(--rw-ease-elastic), 
+                box-shadow 0.3s ease, 
+                border-color 0.3s ease;
+    z-index: 5;
+    will-change: transform;
+}
+
+.orbit-satellite-card:hover {
+    transform: scale(1.15);
+    z-index: 25;
+    border-color: var(--rw-primary);
+    box-shadow: 0 0 28px var(--rw-primary-glow-active), 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.orbit-satellite-img {
+    width: var(--rw-satellite-img);
+    height: var(--rw-satellite-img);
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--rw-primary);
+    margin-bottom: 3px;
+    flex-shrink: 0;
+}
+
+.orbit-satellite-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--rw-text-headline);
+    margin: 0;
+    max-width: 90%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.orbit-satellite-periode {
+    font-size: 9.5px;
+    color: var(--rw-text-sub);
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   7. FISIKA PERGERAKAN: DAMP -> GLIDE -> SETTLE (SWAP ENGINE)
+   ========================================================================== */
+
+/* Satelit: Menciut (Damp) -> Menggeser ke tengah -> Membesar & Membal */
+.orbit-satellite-anchor.is-swapping-to-center {
+    animation: satAnchorGlideToCenter var(--rw-swap-time) var(--rw-ease-damp) forwards !important;
+    z-index: 40;
+}
+
+.orbit-satellite-anchor.is-swapping-to-center .orbit-satellite-card {
+    animation: satCardMorphToCenter var(--rw-swap-time) var(--rw-ease-elastic) forwards !important;
+}
+
+/* Center Hub: Menciut (Damp) -> Mengecil Masuk ke Barisan Orbit */
+.rw-center-hub.is-swapping-to-orbit {
+    animation: hubMorphToOrbit var(--rw-swap-time) var(--rw-ease-damp) forwards !important;
+    z-index: 10;
+}
+
+/* ==========================================================================
+   8. KEYFRAME ENGINES (KONTINU & SWAP PHYSICS)
+   ========================================================================== */
+@keyframes rotateOrbitContinuous {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes counterRotateOrbit {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(-360deg); }
+}
+
+/* Fisika Anchor Satelit ke Pusat */
+@keyframes satAnchorGlideToCenter {
+    0% {
+        transform: rotate(var(--orbit-angle, 0deg)) translate(var(--rw-orbit-radius)) rotate(calc(-1 * var(--orbit-angle, 0deg)));
+    }
+    18% {
+        /* Fase DAMP / Shock: Menahan posisi sudut dengan getaran */
+        transform: rotate(var(--orbit-angle, 0deg)) translate(calc(var(--rw-orbit-radius) * 1.04)) rotate(calc(-1 * var(--orbit-angle, 0deg)));
+    }
+    100% {
+        /* GLIDE halus langsung ke (0, 0) tengah */
+        transform: rotate(0deg) translate(0px) rotate(0deg);
+    }
+}
+
+/* Fisika Kartu Satelit Membesar ke Hero Size */
+@keyframes satCardMorphToCenter {
+    0% {
+        transform: scale(1);
+    }
+    18% {
+        /* DAMP: Menciut sesaat saat diklik */
+        transform: scale(0.86);
+        box-shadow: 0 0 35px var(--rw-primary-glow-active);
+    }
+    75% {
+        /* Membesar melebihi ukuran target (Overshoot) */
+        transform: scale(2.05);
+        border-color: var(--rw-primary);
+        box-shadow: 0 0 50px var(--rw-primary-glow-active);
+    }
+    100% {
+        /* SETTLE: Kembali membal pas di posisi center hub */
+        transform: scale(1.95);
+        border-color: var(--rw-primary);
+        box-shadow: 0 0 55px var(--rw-primary-glow-active);
+    }
+}
+
+/* Fisika Center Hub Mengecil & Meluncur */
+@keyframes hubMorphToOrbit {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    18% {
+        /* DAMP: Ikut bereaksi menciut sesaat */
+        transform: scale(0.92);
+        opacity: 0.9;
+    }
+    100% {
+        /* Mengecil dan memudar halus bersiap masuk ke orbit */
+        transform: scale(0.48);
+        opacity: 0.15;
+    }
+}
+
+/* ==========================================================================
+   9. MEDIA QUERIES (TABLET & SMARTPHONE BESAR)
+   ========================================================================== */
+@media (max-width: 1024px) {
+    :root {
+        --rw-stage-size: 520px;
+        --rw-orbit-radius: 200px;
+        --rw-hub-size: 260px;
+        --rw-hub-img: 150px;
+        --rw-satellite-size: 110px;
+        --rw-satellite-img: 56px;
+    }
+
+    .rw-main-grid {
+        grid-template-columns: 1fr;
+        gap: 36px;
+    }
+
+    .rw-stage-col {
+        min-height: auto;
+    }
+
+    .rw-narrative-card {
+        text-align: center;
+    }
+
+    .rw-pill-badge {
+        margin: 0 auto 14px auto;
+    }
+
+    .rw-stats-grid {
+        max-width: 480px;
+        margin: 0 auto 24px auto;
+    }
+}
+
+@media (max-width: 640px) {
+    :root {
+        --rw-stage-size: 380px;
+        --rw-orbit-radius: 145px;
+        --rw-hub-size: 205px;
+        --rw-hub-img: 120px;      /* Foto tetap besar di HP */
+        --rw-satellite-size: 86px;
+        --rw-satellite-img: 44px;
+    }
+
+    .rw-section-bg {
+        padding: 45px 0;
+    }
+
+    .rw-headline {
+        font-size: 22px;
+    }
+
+    .rw-center-badge {
+        font-size: 9.5px;
+        padding: 2px 9px;
+    }
+
+    .rw-center-name {
+        font-size: 13.5px;
+    }
+
+    .rw-center-role {
+        font-size: 10.5px;
+    }
+
+    .rw-center-periode {
+        font-size: 9.5px;
+    }
+
+    .orbit-satellite-name {
+        font-size: 9.5px;
+    }
+
+    .orbit-satellite-periode {
+        font-size: 8px;
+    }
+}
+
+@media (max-width: 380px) {
+    :root {
+        --rw-stage-size: 330px;
+        --rw-orbit-radius: 125px;
+        --rw-hub-size: 180px;
+        --rw-hub-img: 105px;
+        --rw-satellite-size: 76px;
+        --rw-satellite-img: 38px;
+    }
+}
+
+//* ==========================================================================
+   DETAIL RW PAGE: RESPONSIVE CARD GRID (PORTRAIT IMAGE RATIO)
+   ========================================================================== */
+.rw-detail-page {
+    background: #f8fafc;
+    min-height: 85vh;
+}
+
+.rw-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 32px;
+    margin-top: 35px;
+}
+
+/* Base Card */
+.rw-detail-card {
+    background: #ffffff;
+    border-radius: 24px;
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 600px; /* Dipertinggi agar proporsi foto potret & konten tetap lega */
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.04);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+
+.rw-detail-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 35px rgba(0, 102, 204, 0.12);
+}
+
+.rw-detail-card.is-active-card {
+    border: 2px solid #0066cc;
+    box-shadow: 0 12px 30px rgba(0, 102, 204, 0.15);
+}
+
+/* 1. BAGIAN GAMBAR / FOTO (POTRAIT RATIO ~50% TOTAL HEIGHT) */
+.rw-card-img-box {
+    position: relative;
+    height: 300px; /* Dikunci tinggi potretnya */
+    width: 100%;
+    background: #e2e8f0;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.rw-card-img-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top; /* Fokus ke wajah/atas agar tidak terpotong */
+    transition: transform 0.4s ease;
+}
+
+.rw-detail-card:hover .rw-card-img-box img {
+    transform: scale(1.05);
+}
+
+/* Badge Status Floating */
+.rw-card-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 5px 14px;
+    border-radius: 99px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+}
+
+.rw-card-badge.status-active {
+    background: #0066cc;
+    color: #ffffff;
+}
+
+.rw-card-badge.status-demis {
+    background: #475569;
+    color: #ffffff;
+}
+
+/* KONTEN DETAIL CARD (SISA RUANG KARTU) */
+.rw-card-content {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* 2. NAMA */
+.rw-card-name {
+    font-size: 18px;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 6px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 3. STATUS & 4. MASA JABATAN */
+.rw-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12.5px;
+    color: #64748b;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.rw-card-role {
+    font-weight: 700;
+    color: #0066cc;
+}
+
+.rw-card-period {
+    font-weight: 600;
+}
+
+/* 5. DESKRIPSI */
+.rw-card-desc-box {
+    flex-grow: 1;
+    margin: 12px 0;
+    overflow: hidden;
+}
+
+.rw-card-desc {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.65;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin: 0;
+}
+
+/* 6. NOMOR WHATSAPP */
+.rw-card-action {
+    margin-top: 8px;
+}
+
+.rw-card-wa-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #25d366;
+    color: #ffffff;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.25s ease, transform 0.2s ease;
+}
+
+.rw-card-wa-btn:hover {
+    background: #1ebc59;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.35);
+}
+
+.rw-card-no-contact {
+    display: block;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: #94a3b8;
+    padding: 8px 0;
+}
+
+/* Empty State */
+.rw-empty-state {
+    text-align: center;
+    padding: 60px 0;
+    color: #64748b;
+}
+
+.rw-empty-state i {
+    margin-bottom: 15px;
+    color: #94a3b8;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 768px) {
+    .rw-detail-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .rw-detail-card {
+        height: 560px;
+    }
+
+    .rw-card-img-box {
+        height: 270px;
+    }
+}

@@ -37,7 +37,6 @@ window.loadRwData = async function() {
 
         const res = await fetcher(targetUrl);
         
-        // Pengecekan Aman: Pastikan respon bernilai OK dan tipe datanya JSON
         if (!res.ok) {
             const errText = await res.text();
             console.error(">>> [ERROR SERVER RESPONDED NON-200]:", errText);
@@ -83,11 +82,63 @@ window.loadRwData = async function() {
     }
 };
 
+// Helper Canvas Browser: Mengonversi File Gambar Apapun ke Format WebP
+async function convertToWebP(file, quality = 0.8) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0);
+
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        const originalName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+                        const webpFileName = `${originalName}.webp`;
+                        const convertedFile = new File([blob], webpFileName, {
+                            type: "image/webp",
+                            lastModified: Date.now()
+                        });
+                        resolve(convertedFile);
+                    } else {
+                        reject(new Error("Gagal konversi gambar ke WebP"));
+                    }
+                }, "image/webp", quality);
+            };
+            img.onerror = (err) => reject(err);
+        };
+        reader.onerror = (err) => reject(err);
+    });
+}
+
 window.saveRwData = async function(event) {
     event.preventDefault();
-    const formData = new FormData(event.target);
+    const formElement = event.target;
+    const formData = new FormData();
+
+    // 1. Salin data teks non-file
+    const inputs = formElement.querySelectorAll("input:not([type='file']), select, textarea");
+    inputs.forEach(input => {
+        if (input.name) {
+            formData.append(input.name, input.value);
+        }
+    });
 
     try {
+        // 2. Process & Convert foto_utama ke WebP
+        const fotoUtamaInput = document.getElementById("foto_utama");
+        if (fotoUtamaInput && fotoUtamaInput.files.length > 0) {
+            const file = fotoUtamaInput.files[0];
+            const webpFile = await convertToWebP(file);
+            formData.append("foto_utama", webpFile);
+        }
+
         const targetUrl = (window.API && window.API.RW) ? window.API.RW.SAVE : "http://localhost:3000/api/admin/rw";
         const fetcher = typeof window.apiFetch === "function" ? window.apiFetch : fetch;
 

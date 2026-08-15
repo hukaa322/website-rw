@@ -7,7 +7,6 @@ const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
-const potrace = require("potrace");
 
 const app = express();
 const JWT_SECRET = "vireta2_secret_key_2026_rw05";
@@ -19,12 +18,14 @@ app.use(
       "http://localhost:5500",
       "http://127.0.0.1:5500",
       "http://localhost",
-      // "https://a19e-114-10-64-129.ngrok-free.app",
     ],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization", "ngrok-skip-browser-warning"]
   }),
 );
+// Izinkan akses folder static gambar oleh browser
+app.use("/assets", express.static(path.join(__dirname, "assets")));
+app.use("/assets/galery", express.static(path.join(__dirname, "assets/galery")));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -72,8 +73,8 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
-// 3. Konfigurasi Multer Upload (Cukup Sekali Saja)
-const storage = multer.diskStorage({
+// 3. Konfigurasi Multer Upload (RT)
+const storageRt = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = path.join(__dirname, "assets/galery/rt");
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -81,33 +82,60 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, "raw-" + uniqueSuffix + path.extname(file.originalname));
+    const ext = path.extname(file.originalname) || ".webp";
+    cb(null, "rt-" + uniqueSuffix + ext);
   },
 });
+const uploadRt = multer({ storage: storageRt });
 
-const upload = multer({ storage });
+// Konfigurasi Multer Upload (RW)
+const storageRw = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = path.join(__dirname, "assets/galery/rw");
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname) || ".webp";
+    cb(null, "rw-" + uniqueSuffix + ext);
+  },
+});
+const uploadRw = multer({ storage: storageRw });
 
-// 4. Helper Konversi SVG Aman
-const convertToSvg = (inputPath) => {
-  return new Promise((resolve, reject) => {
-    if (!inputPath || !fs.existsSync(inputPath)) return resolve(null);
-    const svgPath =
-      inputPath.replace(/raw-/, "").replace(/\.[^/.]+$/, "") + ".svg";
-    potrace.trace(inputPath, { threshold: 128 }, (err, svg) => {
-      if (err) {
-        reject(err);
-      } else {
-        fs.writeFileSync(svgPath, svg);
-        if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath);
-        resolve(path.basename(svgPath));
-      }
-    });
-  });
-};
+// Konfigurasi Multer Upload (Berita & Galeri Umum)
+const storageBeritaGaleri = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = path.join(__dirname, "assets/galery/berita");
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname) || ".webp";
+    cb(null, "img-" + uniqueSuffix + ext);
+  },
+});
+const uploadBeritaGaleri = multer({ storage: storageBeritaGaleri });
 
-// --- ENDPOINTS ---
+// Konfigurasi Multer Upload (Layanan)
+const storageLayanan = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = path.join(__dirname, "assets/galery/layanan");
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname) || ".webp";
+    cb(null, "layanan-" + uniqueSuffix + ext);
+  },
+});
+const uploadLayanan = multer({ storage: storageLayanan });
 
-// Endpoint Login
+
+// --- AUTH ENDPOINTS ---
+
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
 
@@ -144,11 +172,10 @@ app.post("/api/login", (req, res) => {
       { expiresIn: "8h" },
     );
 
-    // Di endpoint app.post("/api/login", ...) pada server.js
     res.cookie("admin_token", token, {
       httpOnly: true,
-      secure: true, // Wajib true jika backend dipanggil via HTTPS (Ngrok)
-      sameSite: "none", // Wajib "none" untuk cross-origin (localhost -> ngrok)
+      secure: true,
+      sameSite: "none",
       maxAge: 8 * 60 * 60 * 1000,
     });
     res.json({
@@ -163,7 +190,6 @@ app.post("/api/login", (req, res) => {
   });
 });
 
-// Endpoint Protected Dashboard
 app.get("/api/admin/dashboard-data", authenticateToken, (req, res) => {
   res.json({
     success: true,
@@ -171,7 +197,14 @@ app.get("/api/admin/dashboard-data", authenticateToken, (req, res) => {
   });
 });
 
-// Endpoint Read All RT
+app.post("/api/logout", (req, res) => {
+  res.clearCookie("admin_token");
+  res.json({ success: true, message: "Berhasil logout." });
+});
+
+
+// --- ENDPOINTS RT ---
+
 app.get("/api/admin/rt", authenticateToken, (req, res) => {
   const sql = `
     SELECT r.*, GROUP_CONCAT(p.foto_url) as foto_pendukung 
@@ -186,370 +219,292 @@ app.get("/api/admin/rt", authenticateToken, (req, res) => {
   });
 });
 
-// Endpoint Create RT
 app.post(
   "/api/admin/rt",
   authenticateToken,
-  upload.fields([
+  uploadRt.fields([
     { name: "foto_utama", maxCount: 1 },
     { name: "foto_pendukung", maxCount: 10 },
   ]),
   async (req, res) => {
-    console.log("\n====== [LOG START] REQUEST SIMPAN RT ======");
-    console.log("--> 1. Payload Body:", req.body);
-    console.log(
-      "--> 2. Files Loaded:",
-      req.files ? Object.keys(req.files) : "Tidak ada file",
-    );
-
     try {
-      const { nomor_rt, nama_ketua, nomor_telepon, ringkasan } = req.body;
+      const { id, nomor_rt, nama_ketua, masa_jabatan, nomor_telepon, ringkasan } = req.body;
 
       if (!nomor_rt || !nama_ketua || !nomor_telepon) {
-        console.error(
-          "--> [LOG ERROR] Validasi Gagal: Field wajib ada yang kosong.",
-        );
         return res.status(400).json({
           success: false,
           message: "Nomor RT, Nama Ketua, dan No Telp wajib diisi!",
         });
       }
 
-      // Process Foto Utama (jika ada)
-      let fotoUtamaSvg = null;
+      let fotoUtama = null;
       if (req.files && req.files["foto_utama"] && req.files["foto_utama"][0]) {
-        console.log("--> 3. Memproses Konversi Foto Utama ke SVG...");
-        fotoUtamaSvg = await convertToSvg(req.files["foto_utama"][0].path);
-        console.log("--> 3. Result SVG Foto Utama:", fotoUtamaSvg);
+        fotoUtama = req.files["foto_utama"][0].filename;
       }
 
-      const sqlInsert =
-        "INSERT INTO rt_details (nomor_rt, nama_ketua, nomor_telepon, ringkasan, foto_utama) VALUES (?, ?, ?, ?, ?)";
+      if (id && id.trim() !== "") {
+        let sqlUpdate = "UPDATE rt_details SET nomor_rt=?, nama_ketua=?, masa_jabatan=?, nomor_telepon=?, ringkasan=? WHERE id=?";
+        let params = [nomor_rt, nama_ketua, masa_jabatan, nomor_telepon, ringkasan, id];
 
-      console.log("--> 4. Menjalankan Query MySQL Insert RT...");
-      db.query(
-        sqlInsert,
-        [nomor_rt, nama_ketua, nomor_telepon, ringkasan, fotoUtamaSvg],
-        async (err, result) => {
-          if (err) {
-            console.error("--> [LOG MYSQL ERROR]:", err.sqlMessage || err);
-            return res.status(500).json({
-              success: false,
-              message:
-                err.code === "ER_DUP_ENTRY"
+        if (fotoUtama) {
+          sqlUpdate = "UPDATE rt_details SET nomor_rt=?, nama_ketua=?, masa_jabatan=?, nomor_telepon=?, ringkasan=?, foto_utama=? WHERE id=?";
+          params = [nomor_rt, nama_ketua, masa_jabatan, nomor_telepon, ringkasan, fotoUtama, id];
+        }
+
+        db.query(sqlUpdate, params, (err) => {
+          if (err) return res.status(500).json({ success: false, message: err.message });
+          return res.json({ success: true, message: "Data RT berhasil diperbarui!" });
+        });
+      } else {
+        const sqlInsert =
+          "INSERT INTO rt_details (nomor_rt, nama_ketua, masa_jabatan, nomor_telepon, ringkasan, foto_utama) VALUES (?, ?, ?, ?, ?, ?)";
+
+        db.query(
+          sqlInsert,
+          [nomor_rt, nama_ketua, masa_jabatan, nomor_telepon, ringkasan, fotoUtama],
+          async (err, result) => {
+            if (err) {
+              return res.status(500).json({
+                success: false,
+                message: err.code === "ER_DUP_ENTRY"
                   ? `[MySQL Error] RT 0${nomor_rt} sudah pernah disimpan sebelumnya!`
                   : `[MySQL Error] ${err.sqlMessage || err.message}`,
-            });
-          }
+              });
+            }
 
-          const rtId = result.insertId;
-          console.log(`--> 5. Berhasil Insert RT Details. ID RT baru: ${rtId}`);
+            const rtId = result.insertId;
 
-          // Process Foto Pendukung (jika ada)
-          if (
-            req.files &&
-            req.files["foto_pendukung"] &&
-            req.files["foto_pendukung"].length > 0
-          ) {
-            console.log(
-              `--> 6. Memproses ${req.files["foto_pendukung"].length} Foto Pendukung...`,
-            );
-            for (const file of req.files["foto_pendukung"]) {
-              const svgName = await convertToSvg(file.path);
-              if (svgName) {
+            if (req.files && req.files["foto_pendukung"] && req.files["foto_pendukung"].length > 0) {
+              for (const file of req.files["foto_pendukung"]) {
                 await new Promise((resolve) => {
                   db.query(
                     "INSERT INTO rt_photos (rt_id, foto_url) VALUES (?, ?)",
-                    [rtId, svgName],
-                    (err) => {
-                      if (err)
-                        console.error("--> [LOG ERROR PHOTO INSERT]:", err);
-                      resolve();
-                    },
+                    [rtId, file.filename],
+                    (err) => resolve()
                   );
                 });
               }
             }
-          }
 
-          console.log("====== [LOG SUCCESS] TRANSAKSI SELESAI ======\n");
-          return res.json({
-            success: true,
-            message: "Data RT berhasil ditambahkan ke MySQL!",
-          });
-        },
-      );
+            return res.json({
+              success: true,
+              message: "Data RT berhasil ditambahkan!",
+            });
+          }
+        );
+      }
     } catch (err) {
-      console.error("--> [LOG FATAL CATCH ERROR]:", err);
-      res.status(500).json({
-        success: false,
-        message: "Server Crash: " + err.message,
-      });
+      res.status(500).json({ success: false, message: "Server Crash: " + err.message });
     }
-  },
+  }
 );
 
-// Endpoint Delete RT
 app.delete("/api/admin/rt/:id", authenticateToken, (req, res) => {
   const { id } = req.params;
   db.query("DELETE FROM rt_details WHERE id = ?", [id], (err) => {
-    if (err)
-      return res.status(500).json({ success: false, message: err.message });
+    if (err) return res.status(500).json({ success: false, message: err.message });
     res.json({ success: true, message: "Data RT berhasil dihapus." });
   });
-});
-
-// Endpoint Logout
-app.post("/api/logout", (req, res) => {
-  res.clearCookie("admin_token");
-  res.json({ success: true, message: "Berhasil logout." });
 });
 
 
 // --- ENDPOINTS RW ---
 
-// 1. READ ALL RW
 app.get("/api/admin/rw", authenticateToken, (req, res) => {
-    const sql = "SELECT * FROM rw_details ORDER BY is_aktif DESC, created_at DESC";
-    db.query(sql, (err, results) => {
-        if (err) return res.status(500).json({ success: false, message: err.message });
-        res.json({ success: true, data: results });
-    });
+  const sql = "SELECT * FROM rw_details ORDER BY is_aktif DESC, created_at DESC";
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, data: results });
+  });
 });
 
-// 2. CREATE / UPDATE RW
-app.post("/api/admin/rw", authenticateToken, upload.single("foto_utama"), async (req, res) => {
-    try {
-        const { id, nama_ketua, periode, nomor_telepon, visi_misi, is_aktif } = req.body;
+app.post("/api/admin/rw", authenticateToken, uploadRw.single("foto_utama"), async (req, res) => {
+  try {
+    const { id, nama_ketua, periode, nomor_telepon, visi_misi, is_aktif } = req.body;
 
-        if (!nama_ketua || !periode) {
-            return res.status(400).json({ success: false, message: "Nama Ketua dan Periode wajib diisi!" });
-        }
-
-        let fotoName = null;
-        if (req.file) {
-            fotoName = await convertToSvg(req.file.path);
-        }
-
-        // Mode UPDATE (jika ID dikirim)
-        if (id && id.trim() !== "") {
-            let sqlUpdate = "UPDATE rw_details SET nama_ketua=?, periode=?, nomor_telepon=?, visi_misi=?, is_aktif=? WHERE id=?";
-            let params = [nama_ketua, periode, nomor_telepon, visi_misi, is_aktif, id];
-
-            if (fotoName) {
-                sqlUpdate = "UPDATE rw_details SET nama_ketua=?, periode=?, nomor_telepon=?, visi_misi=?, is_aktif=?, foto_utama=? WHERE id=?";
-                params = [nama_ketua, periode, nomor_telepon, visi_misi, is_aktif, fotoName, id];
-            }
-
-            db.query(sqlUpdate, params, (err) => {
-                if (err) return res.status(500).json({ success: false, message: err.message });
-                return res.json({ success: true, message: "Data RW berhasil diperbarui!" });
-            });
-        } 
-        // Mode INSERT Baru
-        else {
-            const sqlInsert = "INSERT INTO rw_details (nama_ketua, periode, nomor_telepon, visi_misi, is_aktif, foto_utama) VALUES (?, ?, ?, ?, ?, ?)";
-            db.query(sqlInsert, [nama_ketua, periode, nomor_telepon, visi_misi, is_aktif || 1, fotoName], (err) => {
-                if (err) return res.status(500).json({ success: false, message: err.message });
-                return res.json({ success: true, message: "Data RW berhasil ditambahkan!" });
-            });
-        }
-    } catch (err) {
-        res.status(500).json({ success: false, message: "Server Error: " + err.message });
+    if (!nama_ketua || !periode) {
+      return res.status(400).json({ success: false, message: "Nama Ketua dan Periode wajib diisi!" });
     }
-});
 
-// 3. DELETE RW
-app.delete("/api/admin/rw/:id", authenticateToken, (req, res) => {
-    const { id } = req.params;
-    db.query("DELETE FROM rw_details WHERE id = ?", [id], (err) => {
+    let fotoName = req.file ? req.file.filename : null;
+
+    if (id && id.trim() !== "") {
+      let sqlUpdate = "UPDATE rw_details SET nama_ketua=?, periode=?, nomor_telepon=?, visi_misi=?, is_aktif=? WHERE id=?";
+      let params = [nama_ketua, periode, nomor_telepon, visi_misi, is_aktif, id];
+
+      if (fotoName) {
+        sqlUpdate = "UPDATE rw_details SET nama_ketua=?, periode=?, nomor_telepon=?, visi_misi=?, is_aktif=?, foto_utama=? WHERE id=?";
+        params = [nama_ketua, periode, nomor_telepon, visi_misi, is_aktif, fotoName, id];
+      }
+
+      db.query(sqlUpdate, params, (err) => {
         if (err) return res.status(500).json({ success: false, message: err.message });
-        res.json({ success: true, message: "Data RW berhasil dihapus." });
-    });
+        return res.json({ success: true, message: "Data RW berhasil diperbarui!" });
+      });
+    } else {
+      const sqlInsert = "INSERT INTO rw_details (nama_ketua, periode, nomor_telepon, visi_misi, is_aktif, foto_utama) VALUES (?, ?, ?, ?, ?, ?)";
+      db.query(sqlInsert, [nama_ketua, periode, nomor_telepon, visi_misi, is_aktif || 1, fotoName], (err) => {
+        if (err) return res.status(500).json({ success: false, message: err.message });
+        return res.json({ success: true, message: "Data RW berhasil ditambahkan!" });
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server Error: " + err.message });
+  }
 });
 
+app.delete("/api/admin/rw/:id", authenticateToken, (req, res) => {
+  const { id } = req.params;
+  db.query("DELETE FROM rw_details WHERE id = ?", [id], (err) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, message: "Data RW berhasil dihapus." });
+  });
+});
 
 
 // --- ENDPOINTS BERITA & PENGUMUMAN ---
 
-// 1. READ ALL BERITA
 app.get("/api/admin/berita", authenticateToken, (req, res) => {
-    const sql = "SELECT * FROM berita ORDER BY tanggal DESC";
-    db.query(sql, (err, results) => {
-        if (err) return res.status(500).json({ success: false, message: err.message });
-        res.json({ success: true, data: results });
-    });
+  const sql = "SELECT * FROM berita ORDER BY tanggal DESC";
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, data: results });
+  });
 });
 
-// 2. CREATE / UPDATE BERITA
-app.post("/api/admin/berita", authenticateToken, upload.single("foto_utama"), async (req, res) => {
-    try {
-        const { id, judul, kategori, tanggal, isi_berita } = req.body;
+app.post("/api/admin/berita", authenticateToken, uploadBeritaGaleri.single("foto_utama"), async (req, res) => {
+  try {
+    const { id, judul, kategori, tanggal, isi_berita } = req.body;
 
-        if (!judul || !kategori || !tanggal) {
-            return res.status(400).json({ success: false, message: "Judul, Kategori, dan Tanggal wajib diisi!" });
-        }
-
-        let fotoName = null;
-        if (req.file) {
-            fotoName = await convertToSvg(req.file.path);
-        }
-
-        // Mode UPDATE
-        if (id && id.trim() !== "") {
-            let sqlUpdate = "UPDATE berita SET judul=?, kategori=?, tanggal=?, isi_berita=? WHERE id=?";
-            let params = [judul, kategori, tanggal, isi_berita, id];
-
-            if (fotoName) {
-                sqlUpdate = "UPDATE berita SET judul=?, kategori=?, tanggal=?, isi_berita=?, foto_utama=? WHERE id=?";
-                params = [judul, kategori, tanggal, isi_berita, fotoName, id];
-            }
-
-            db.query(sqlUpdate, params, (err) => {
-                if (err) return res.status(500).json({ success: false, message: err.message });
-                return res.json({ success: true, message: "Berita berhasil diperbarui!" });
-            });
-        } 
-        // Mode INSERT
-        else {
-            const sqlInsert = "INSERT INTO berita (judul, kategori, tanggal, isi_berita, foto_utama) VALUES (?, ?, ?, ?, ?)";
-            db.query(sqlInsert, [judul, kategori, tanggal, isi_berita, fotoName], (err) => {
-                if (err) return res.status(500).json({ success: false, message: err.message });
-                return res.json({ success: true, message: "Berita berhasil ditambahkan!" });
-            });
-        }
-    } catch (err) {
-        res.status(500).json({ success: false, message: "Server Error: " + err.message });
+    if (!judul || !kategori || !tanggal) {
+      return res.status(400).json({ success: false, message: "Judul, Kategori, dan Tanggal wajib diisi!" });
     }
+
+    let fotoName = req.file ? req.file.filename : null;
+
+    if (id && id.trim() !== "") {
+      let sqlUpdate = "UPDATE berita SET judul=?, kategori=?, tanggal=?, isi_berita=? WHERE id=?";
+      let params = [judul, kategori, tanggal, isi_berita, id];
+
+      if (fotoName) {
+        sqlUpdate = "UPDATE berita SET judul=?, kategori=?, tanggal=?, isi_berita=?, foto_utama=? WHERE id=?";
+        params = [judul, kategori, tanggal, isi_berita, fotoName, id];
+      }
+
+      db.query(sqlUpdate, params, (err) => {
+        if (err) return res.status(500).json({ success: false, message: err.message });
+        return res.json({ success: true, message: "Berita berhasil diperbarui!" });
+      });
+    } else {
+      const sqlInsert = "INSERT INTO berita (judul, kategori, tanggal, isi_berita, foto_utama) VALUES (?, ?, ?, ?, ?)";
+      db.query(sqlInsert, [judul, kategori, tanggal, isi_berita, fotoName], (err) => {
+        if (err) return res.status(500).json({ success: false, message: err.message });
+        return res.json({ success: true, message: "Berita berhasil ditambahkan!" });
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server Error: " + err.message });
+  }
 });
 
-// 3. DELETE BERITA
 app.delete("/api/admin/berita/:id", authenticateToken, (req, res) => {
-    const { id } = req.params;
-    db.query("DELETE FROM berita WHERE id = ?", [id], (err) => {
-        if (err) return res.status(500).json({ success: false, message: err.message });
-        res.json({ success: true, message: "Berita berhasil dihapus." });
-    });
+  const { id } = req.params;
+  db.query("DELETE FROM berita WHERE id = ?", [id], (err) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, message: "Berita berhasil dihapus." });
+  });
 });
 
-// Endpoint publik berita (Tanpa authenticateToken)
 app.get("/api/public/berita", (req, res) => {
-    const sql = "SELECT * FROM berita ORDER BY tanggal DESC";
-    db.query(sql, (err, results) => {
-        if (err) return res.status(500).json({ success: false, message: err.message });
-        res.json({ success: true, data: results });
-    });
+  const sql = "SELECT * FROM berita ORDER BY tanggal DESC";
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, data: results });
+  });
 });
 
-// --- ENDPOINTS GALERI WARGA (UMKM, KEGIATAN, IKON) ---
 
-// 1. READ ALL GALERI
+// --- ENDPOINTS GALERI WARGA ---
+
 app.get("/api/admin/galeri", authenticateToken, (req, res) => {
-    const { kategori } = req.query;
-    let sql = "SELECT * FROM galeri ORDER BY created_at DESC";
-    let params = [];
+  const { kategori } = req.query;
+  let sql = "SELECT * FROM galeri ORDER BY created_at DESC";
+  let params = [];
 
-    if (kategori) {
-        sql = "SELECT * FROM galeri WHERE kategori = ? ORDER BY created_at DESC";
-        params.push(kategori);
+  if (kategori) {
+    sql = "SELECT * FROM galeri WHERE kategori = ? ORDER BY created_at DESC";
+    params.push(kategori);
+  }
+
+  db.query(sql, params, (err, results) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, data: results });
+  });
+});
+
+app.post("/api/admin/galeri", authenticateToken, uploadBeritaGaleri.single("foto_utama"), async (req, res) => {
+  try {
+    const { id, judul, kategori, deskripsi, kontak } = req.body;
+
+    if (!judul || !kategori) {
+      return res.status(400).json({ success: false, message: "Judul dan Kategori wajib diisi!" });
     }
 
-    db.query(sql, params, (err, results) => {
+    let fotoName = req.file ? req.file.filename : null;
+
+    if (id && id.trim() !== "") {
+      let sqlUpdate = "UPDATE galeri SET judul=?, kategori=?, deskripsi=?, kontak=? WHERE id=?";
+      let params = [judul, kategori, deskripsi, kontak, id];
+
+      if (fotoName) {
+        sqlUpdate = "UPDATE galeri SET judul=?, kategori=?, deskripsi=?, kontak=?, foto_utama=? WHERE id=?";
+        params = [judul, kategori, deskripsi, kontak, fotoName, id];
+      }
+
+      db.query(sqlUpdate, params, (err) => {
         if (err) return res.status(500).json({ success: false, message: err.message });
-        res.json({ success: true, data: results });
-    });
-});
-
-// 2. CREATE / UPDATE GALERI
-app.post("/api/admin/galeri", authenticateToken, upload.single("foto_utama"), async (req, res) => {
-    try {
-        const { id, judul, kategori, deskripsi, kontak } = req.body;
-
-        if (!judul || !kategori) {
-            return res.status(400).json({ success: false, message: "Judul dan Kategori wajib diisi!" });
-        }
-
-        let fotoName = null;
-        if (req.file) {
-            fotoName = await convertToSvg(req.file.path);
-        }
-
-        // Mode UPDATE
-        if (id && id.trim() !== "") {
-            let sqlUpdate = "UPDATE galeri SET judul=?, kategori=?, deskripsi=?, kontak=? WHERE id=?";
-            let params = [judul, kategori, deskripsi, kontak, id];
-
-            if (fotoName) {
-                sqlUpdate = "UPDATE galeri SET judul=?, kategori=?, deskripsi=?, kontak=?, foto_utama=? WHERE id=?";
-                params = [judul, kategori, deskripsi, kontak, fotoName, id];
-            }
-
-            db.query(sqlUpdate, params, (err) => {
-                if (err) return res.status(500).json({ success: false, message: err.message });
-                return res.json({ success: true, message: "Data galeri berhasil diperbarui!" });
-            });
-        } 
-        // Mode INSERT
-        else {
-            const sqlInsert = "INSERT INTO galeri (judul, kategori, deskripsi, kontak, foto_utama) VALUES (?, ?, ?, ?, ?)";
-            db.query(sqlInsert, [judul, kategori, deskripsi, kontak, fotoName], (err) => {
-                if (err) return res.status(500).json({ success: false, message: err.message });
-                return res.json({ success: true, message: "Data galeri berhasil ditambahkan!" });
-            });
-        }
-    } catch (err) {
-        res.status(500).json({ success: false, message: "Server Error: " + err.message });
+        return res.json({ success: true, message: "Data galeri berhasil diperbarui!" });
+      });
+    } else {
+      const sqlInsert = "INSERT INTO galeri (judul, kategori, deskripsi, kontak, foto_utama) VALUES (?, ?, ?, ?, ?)";
+      db.query(sqlInsert, [judul, kategori, deskripsi, kontak, fotoName], (err) => {
+        if (err) return res.status(500).json({ success: false, message: err.message });
+        return res.json({ success: true, message: "Data galeri berhasil ditambahkan!" });
+      });
     }
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server Error: " + err.message });
+  }
 });
 
-// 3. DELETE GALERI
 app.delete("/api/admin/galeri/:id", authenticateToken, (req, res) => {
-    const { id } = req.params;
-    db.query("DELETE FROM galeri WHERE id = ?", [id], (err) => {
-        if (err) return res.status(500).json({ success: false, message: err.message });
-        res.json({ success: true, message: "Data galeri berhasil dihapus." });
-    });
+  const { id } = req.params;
+  db.query("DELETE FROM galeri WHERE id = ?", [id], (err) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, message: "Data galeri berhasil dihapus." });
+  });
 });
 
-
-// Endpoint Publik Galeri (Tanpa butuh Token / Auth)
 app.get("/api/public/galeri", (req, res) => {
-    const { kategori } = req.query;
-    let sql = "SELECT * FROM galeri ORDER BY created_at DESC";
-    let params = [];
+  const { kategori } = req.query;
+  let sql = "SELECT * FROM galeri ORDER BY created_at DESC";
+  let params = [];
 
-    if (kategori && kategori !== 'semua') {
-        // Pemetaan filter 'warga' pada tombol ke 'ikon' di database
-        const targetKategori = kategori === 'warga' ? 'ikon' : kategori;
-        sql = "SELECT * FROM galeri WHERE kategori = ? ORDER BY created_at DESC";
-        params.push(targetKategori);
-    }
+  if (kategori && kategori !== 'semua') {
+    const targetKategori = kategori === 'warga' ? 'ikon' : kategori;
+    sql = "SELECT * FROM galeri WHERE kategori = ? ORDER BY created_at DESC";
+    params.push(targetKategori);
+  }
 
-    db.query(sql, params, (err, results) => {
-        if (err) return res.status(500).json({ success: false, message: err.message });
-        res.json({ success: true, data: results });
-    });
+  db.query(sql, params, (err, results) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, data: results });
+  });
 });
 
 
-// Konfigurasi Multer Upload Gambar Layanan
-const storageLayanan = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const dir = path.join(__dirname, "assets/galery/layanan");
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    cb(null, dir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, "layanan-" + uniqueSuffix + path.extname(file.originalname));
-  },
-});
+// --- ENDPOINTS LAYANAN WA ---
 
-const uploadLayanan = multer({ storage: storageLayanan });
-
-// --- ENDPOINTS LAYANAN WA (Surat, Iuran, Kesehatan/Keamanan) ---
-
-// 1. READ ALL (Admin Filter sesuai Target Wilayah / Jenis Layanan)
 app.get("/api/admin/layanan", authenticateToken, (req, res) => {
   const { jenis_layanan, target_wilayah } = req.query;
   let sql = "SELECT * FROM layanan_wa WHERE 1=1";
@@ -572,7 +527,6 @@ app.get("/api/admin/layanan", authenticateToken, (req, res) => {
   });
 });
 
-// 2. CREATE / UPDATE LAYANAN
 app.post(
   "/api/admin/layanan",
   authenticateToken,
@@ -591,44 +545,34 @@ app.post(
         });
       }
 
-      let gambarUmumSvg = null;
-      let gambarQrisSvg = null;
+      let gambarUmum = (req.files && req.files["gambar_umum"] && req.files["gambar_umum"][0]) ? req.files["gambar_umum"][0].filename : null;
+      let gambarQris = (req.files && req.files["gambar_qris"] && req.files["gambar_qris"][0]) ? req.files["gambar_qris"][0].filename : null;
 
-      if (req.files && req.files["gambar_umum"] && req.files["gambar_umum"][0]) {
-        gambarUmumSvg = await convertToSvg(req.files["gambar_umum"][0].path);
-      }
-      if (req.files && req.files["gambar_qris"] && req.files["gambar_qris"][0]) {
-        gambarQrisSvg = await convertToSvg(req.files["gambar_qris"][0].path);
-      }
-
-      // Mode UPDATE
       if (id && id.trim() !== "") {
         let sqlUpdate = `
           UPDATE layanan_wa 
           SET jenis_layanan=?, nama_kegiatan=?, keterangan=?, target_wilayah=?, nomor_telepon=?
-          ${gambarUmumSvg ? ", gambar_umum=?" : ""}
-          ${gambarQrisSvg ? ", gambar_qris=?" : ""}
+          ${gambarUmum ? ", gambar_umum=?" : ""}
+          ${gambarQris ? ", gambar_qris=?" : ""}
           WHERE id=?
         `;
         let params = [jenis_layanan, nama_kegiatan, keterangan, target_wilayah, nomor_telepon];
-        if (gambarUmumSvg) params.push(gambarUmumSvg);
-        if (gambarQrisSvg) params.push(gambarQrisSvg);
+        if (gambarUmum) params.push(gambarUmum);
+        if (gambarQris) params.push(gambarQris);
         params.push(id);
 
         db.query(sqlUpdate, params, (err) => {
           if (err) return res.status(500).json({ success: false, message: err.message });
           return res.json({ success: true, message: "Data layanan berhasil diperbarui!" });
         });
-      } 
-      // Mode INSERT
-      else {
+      } else {
         const sqlInsert = `
           INSERT INTO layanan_wa (jenis_layanan, nama_kegiatan, keterangan, target_wilayah, nomor_telepon, gambar_umum, gambar_qris) 
           VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
         db.query(
           sqlInsert,
-          [jenis_layanan, nama_kegiatan, keterangan, target_wilayah, nomor_telepon, gambarUmumSvg, gambarQrisSvg],
+          [jenis_layanan, nama_kegiatan, keterangan, target_wilayah, nomor_telepon, gambarUmum, gambarQris],
           (err) => {
             if (err) return res.status(500).json({ success: false, message: err.message });
             return res.json({ success: true, message: "Data layanan berhasil ditambahkan!" });
@@ -641,7 +585,6 @@ app.post(
   }
 );
 
-// 3. DELETE LAYANAN
 app.delete("/api/admin/layanan/:id", authenticateToken, (req, res) => {
   const { id } = req.params;
   db.query("DELETE FROM layanan_wa WHERE id = ?", [id], (err) => {
@@ -650,7 +593,6 @@ app.delete("/api/admin/layanan/:id", authenticateToken, (req, res) => {
   });
 });
 
-// Endpoint Publik Layanan WA (Tanpa auth)
 app.get("/api/public/layanan", (req, res) => {
   const { jenis_layanan, target_wilayah } = req.query;
   let sql = "SELECT * FROM layanan_wa WHERE 1=1";

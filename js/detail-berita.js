@@ -49,12 +49,13 @@ async function loadDetailBerita() {
             year: "numeric"
         });
 
-        // URL Gambar Utama
+        // PERBAIKAN: Mengarahkan path gambar ke folder /assets/galery/berita/
+        const baseUrl = (window.API && window.API.BASE_URL) ? window.API.BASE_URL : '';
         const imageUrl = item.foto_utama 
-            ? (item.foto_utama.startsWith('http') ? item.foto_utama : `${window.API.BASE_URL}/assets/galery/rt/${item.foto_utama}`)
+            ? (item.foto_utama.startsWith('http') ? item.foto_utama : `${baseUrl}/assets/galery/berita/${item.foto_utama}`)
             : null;
 
-        // Render HTML Artikel Modern
+        // Render HTML Artikel
         wrapper.innerHTML = `
             <!-- Header Artikel -->
             <span class="article-badge">${escapeHtml(item.kategori || "Pengumuman")}</span>
@@ -69,7 +70,7 @@ async function loadDetailBerita() {
             <!-- Gambar Utama -->
             ${imageUrl ? `
                 <div class="article-cover-wrapper">
-                    <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(item.judul)}" class="article-cover-img" onerror="this.parentElement.style.display='none'">
+                    <img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(item.judul)}" class="article-cover-img" onerror="this.onerror=null; this.src='assets/galery/berita/${item.foto_utama}';">
                 </div>
             ` : ''}
 

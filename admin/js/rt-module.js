@@ -73,12 +73,73 @@ window.deleteRt = async function(id) {
     }
 };
 
+// Helper: Konversi File Gambar ke Format WebP via HTML5 Canvas
+async function convertToWebP(file, quality = 0.8) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0);
+
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        const originalName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+                        const webpFileName = `${originalName}.webp`;
+                        const convertedFile = new File([blob], webpFileName, {
+                            type: "image/webp",
+                            lastModified: Date.now()
+                        });
+                        resolve(convertedFile);
+                    } else {
+                        reject(new Error("Gagal konversi ke WebP"));
+                    }
+                }, "image/webp", quality);
+            };
+            img.onerror = (err) => reject(err);
+        };
+        reader.onerror = (err) => reject(err);
+    });
+}
+
 window.saveRtData = async function(event) {
     event.preventDefault();
     const formElement = event.target;
-    const formData = new FormData(formElement);
+    const formData = new FormData();
+
+    // Copy data non-file dari form
+    const inputs = formElement.querySelectorAll("input:not([type='file']), select, textarea");
+    inputs.forEach(input => {
+        if (input.name) {
+            formData.append(input.name, input.value);
+        }
+    });
 
     try {
+        // Process & Convert foto_utama
+        const fotoUtamaInput = document.getElementById("foto_utama");
+        if (fotoUtamaInput && fotoUtamaInput.files.length > 0) {
+            const file = fotoUtamaInput.files[0];
+            const webpFile = await convertToWebP(file);
+            formData.append("foto_utama", webpFile);
+        }
+
+        // Process & Convert foto_pendukung (Multiple)
+        const fotoPendukungInput = document.getElementById("foto_pendukung");
+        if (fotoPendukungInput && fotoPendukungInput.files.length > 0) {
+            for (let i = 0; i < fotoPendukungInput.files.length; i++) {
+                const file = fotoPendukungInput.files[i];
+                const webpFile = await convertToWebP(file);
+                formData.append("foto_pendukung", webpFile);
+            }
+        }
+
         const res = await apiFetch(API.RT.SAVE, {
             method: "POST",
             body: formData
@@ -95,39 +156,6 @@ window.saveRtData = async function(event) {
         }
     } catch (err) {
         console.error(">>> [LOG FRONTEND FATAL ERROR]:", err);
-        alert("TERJADI ERROR KONEKSI/SERVER: " + err.message);
+        alert("TERJADI ERROR KONEKSI/CONVERT FOTO: " + err.message);
     }
 };
-
-// Event listener submit form RT
-document.addEventListener("submit", async (e) => {
-    if (e.target && e.target.id === "rtForm") {
-        e.preventDefault();
-        console.log(">>> [FRONTEND LOG] Mengirim Form Data RT...");
-
-        const formData = new FormData(e.target);
-
-        try {
-            const res = await fetch("http://localhost:3000/api/admin/rt", {
-                method: "POST",
-                credentials: "include",
-                body: formData
-            });
-
-            console.log(">>> [FRONTEND LOG] Status Response:", res.status);
-            const result = await res.json();
-            console.log(">>> [FRONTEND LOG] Response Body:", result);
-
-            if (result.success) {
-                alert("SUCCESS: " + result.message);
-                window.closeRtModal();
-                window.loadRtData();
-            } else {
-                alert("GAGAL SIMPAN: " + result.message);
-            }
-        } catch (err) {
-            console.error(">>> [FRONTEND ERROR]:", err);
-            alert("Gagal koneksi ke server! Cek console browser (F12).");
-        }
-    }
-});

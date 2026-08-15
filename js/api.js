@@ -3,6 +3,8 @@
  */
 const BASE_URL = "http://localhost:3000"; // URL Backend Ngrok
 
+const ASSET_URL = window.location.origin;
+
 const API = {
     BASE_URL,
     

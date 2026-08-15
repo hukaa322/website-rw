@@ -38,7 +38,7 @@ function formatWaLink(phone, namaKegiatan) {
 // Load Data
 async function loadLayananData() {
     const tbody = document.getElementById('layanan-table-body');
-    if (!tbody) return; // Mencegah crash jika elemen HTML belum dimuat oleh SPA
+    if (!tbody) return;
 
     tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:20px; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Memuat data...</td></tr>`;
 
@@ -76,10 +76,12 @@ function renderLayananTable(data) {
         return;
     }
 
+    const baseUrl = (window.API && window.API.BASE_URL) ? window.API.BASE_URL : '..';
+
     tbody.innerHTML = data.map((item, index) => {
         const waLink = formatWaLink(item.nomor_telepon, item.nama_kegiatan);
-        const imgUmum = item.gambar_umum ? `<a href="../assets/galery/layanan/${item.gambar_umum}" target="_blank" class="btn btn-sm btn-secondary"><i class="fa-solid fa-image"></i> Gambar</a>` : '-';
-        const imgQris = item.gambar_qris ? `<a href="../assets/galery/layanan/${item.gambar_qris}" target="_blank" class="btn btn-sm btn-secondary"><i class="fa-solid fa-qrcode"></i> QRIS</a>` : '-';
+        const imgUmum = item.gambar_umum ? `<a href="${baseUrl}/assets/galery/layanan/${item.gambar_umum}" target="_blank" class="btn btn-sm btn-secondary"><i class="fa-solid fa-image"></i> Gambar</a>` : '-';
+        const imgQris = item.gambar_qris ? `<a href="${baseUrl}/assets/galery/layanan/${item.gambar_qris}" target="_blank" class="btn btn-sm btn-secondary"><i class="fa-solid fa-qrcode"></i> QRIS</a>` : '-';
 
         return `
             <tr>
@@ -134,16 +136,71 @@ function closeLayananModal() {
     document.getElementById('layananModal').style.display = 'none';
 }
 
+// Helper Canvas: Konversi File Gambar ke Format WebP
+async function convertToWebP(file, quality = 0.8) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0);
+
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        const originalName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+                        const webpFileName = `${originalName}.webp`;
+                        const convertedFile = new File([blob], webpFileName, {
+                            type: "image/webp",
+                            lastModified: Date.now()
+                        });
+                        resolve(convertedFile);
+                    } else {
+                        reject(new Error("Gagal konversi ke WebP"));
+                    }
+                }, "image/webp", quality);
+            };
+            img.onerror = (err) => reject(err);
+        };
+        reader.onerror = (err) => reject(err);
+    });
+}
+
 async function handleFormSubmit(event) {
     event.preventDefault();
     const form = document.getElementById('formLayanan');
-    const formData = new FormData(form);
+    const formData = new FormData();
+
+    // Salin input non-file
+    const inputs = form.querySelectorAll("input:not([type='file']), select, textarea");
+    inputs.forEach(input => {
+        if (input.name) formData.append(input.name, input.value);
+    });
 
     const btnSubmit = document.getElementById('btnSubmitLayanan');
     btnSubmit.disabled = true;
     btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...`;
 
     try {
+        // Konversi Gambar Umum jika diunggah
+        const inputGambarUmum = document.getElementById('gambarUmum');
+        if (inputGambarUmum && inputGambarUmum.files.length > 0) {
+            const webpFile = await convertToWebP(inputGambarUmum.files[0]);
+            formData.append('gambar_umum', webpFile);
+        }
+
+        // Konversi Gambar QRIS jika diunggah
+        const inputGambarQris = document.getElementById('gambarQris');
+        if (inputGambarQris && inputGambarQris.files.length > 0) {
+            const webpFile = await convertToWebP(inputGambarQris.files[0]);
+            formData.append('gambar_qris', webpFile);
+        }
+
         const response = await apiFetch(window.API.LAYANAN.SAVE, {
             method: 'POST',
             body: formData
@@ -157,7 +214,7 @@ async function handleFormSubmit(event) {
             alert('Gagal: ' + result.message);
         }
     } catch (err) {
-        alert('Terjadi kesalahan sistem.');
+        alert('Terjadi kesalahan sistem/konversi gambar.');
     } finally {
         btnSubmit.disabled = false;
         btnSubmit.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Simpan Data`;
