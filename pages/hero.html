@@ -1,15 +1,34 @@
-<section class="hero" id="hero">
-    <div class="container">
-        <div class="hero-content">
+<section class="hero-section" id="hero">
+    <!-- Background Slider (Full Layar 100vh) -->
+    <div class="hero-bg-carousel" id="heroCarousel">
+        <!-- Slide di-generate otomatis via hero.js -->
+
+        <!-- Dark Gradient Overlay agar teks kontras -->
+        <div class="hero-backdrop-overlay"></div>
+
+        <!-- Slider Controls & Indicators -->
+        <div class="hero-carousel-controls">
+            <button class="hero-nav-btn prev" id="heroPrevBtn" aria-label="Slide Sebelumnya">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button class="hero-nav-btn next" id="heroNextBtn" aria-label="Slide Berikutnya">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+        <div class="hero-indicators" id="heroIndicators"></div>
+    </div>
+
+    <!-- Foreground Content (Teks di atas gambar) -->
+    <div class="hero-content-wrapper">
+        <div class="hero-main-content">
             <div class="hero-badge">
                 <i class="fa-solid fa-map-location-dot"></i>
-                Website Resmi Perumahan Vireta 2
+                <span>Website Resmi Perumahan Vireta 2</span>
             </div>
 
             <h1 class="hero-title">
-                Membangun
-                <span>Vireta 2</span><br>
-                Yang Harmonis, Aman, & Digital
+                Membangun <span>Vireta 2</span><br>
+                Yang Harmonis, Aman, &amp; Digital
             </h1>
 
             <p class="hero-desc">
@@ -18,47 +37,27 @@
 
             <div class="hero-buttons">
                 <a href="#berita" class="btn btn-primary">
-                    <i class="fa-solid fa-newspaper"></i>
-                    Pengumuman
+                    <i class="fa-solid fa-newspaper"></i> Pengumuman
                 </a>
-                <a href="#tentang" class="btn btn-outline">
-                    <i class="fa-solid fa-circle-info"></i>
-                    Selengkapnya
+                <a href="#tentang" class="btn btn-outline-light">
+                    <i class="fa-solid fa-circle-info"></i> Selengkapnya
                 </a>
-            </div>
-
-            <div class="hero-stats">
-                <div class="stat">
-                    <h2>8</h2>
-                    <p>RT Aktif</p>
-                </div>
-                <div class="stat">
-                    <h2>450+</h2>
-                    <p>Kepala Keluarga</p>
-                </div>
-                <div class="stat">
-                    <h2>24/7</h2>
-                    <p>Keamanan</p>
-                </div>
             </div>
         </div>
 
-        <!-- Slider Placeholder Hero -->
-        <div class="hero-image">
-            <div class="slider-wrapper">
-                <img src="assets/img/hero-1.jpg" alt="Vireta 2 Slide 1" class="slide-img active">
-                <img src="assets/img/hero-2.jpg" alt="Vireta 2 Slide 2" class="slide-img">
-                <div class="slider-controls">
-                    <button class="prev-slide"><i class="fa-solid fa-chevron-left"></i></button>
-                    <button class="next-slide"><i class="fa-solid fa-chevron-right"></i></button>
-                </div>
+        <!-- Floating Stats Bar (Bagian Bawah Hero) -->
+        <div class="hero-bottom-stats">
+            <div class="stat-card">
+                <h2>8</h2>
+                <p>RT Aktif</p>
             </div>
-            <div class="floating-card">
-                <i class="fa-solid fa-handshake-angle"></i>
-                <div>
-                    <strong>Rukun Warga</strong>
-                    <p>Aktif & Terbuka</p>
-                </div>
+            <div class="stat-card">
+                <h2>450+</h2>
+                <p>Kepala Keluarga</p>
+            </div>
+            <div class="stat-card">
+                <h2>24/7</h2>
+                <p>Keamanan</p>
             </div>
         </div>
     </div>

@@ -1,0 +1,123 @@
+/* ==========================================================================
+   SHARED DETAIL PAGES STYLING (Light & Dark Mode)
+   ========================================================================== */
+
+/* 1. Global Container & Tombol Kembali */
+.detail-page-container {
+    max-width: 860px;
+    margin: 40px auto 80px;
+    padding: 0 20px;
+}
+
+.btn-back-shared {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 99px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    border: 1px solid var(--border-color, #E2E8F0);
+    background-color: var(--bg-card, #FFFFFF);
+    color: var(--dark-text, #334155);
+    box-shadow: var(--shadow-sm, 0 1px 3px rgba(0,0,0,0.05));
+}
+
+.btn-back-shared:hover {
+    background-color: var(--primary-blue, #0066cc);
+    color: #FFFFFF !important;
+    border-color: var(--primary-blue, #0066cc);
+    transform: translateX(-4px);
+}
+
+/* 2. Kartu Konten Utama */
+.detail-card-shared {
+    background-color: var(--bg-card, #FFFFFF);
+    border: 1px solid var(--border-color, #E2E8F0);
+    border-radius: 16px;
+    box-shadow: var(--shadow-md, 0 10px 25px -5px rgba(0, 0, 0, 0.05));
+    overflow: hidden;
+    padding: 32px;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+@media (max-width: 640px) {
+    .detail-card-shared {
+        padding: 20px;
+    }
+}
+
+/* 3. Tipografi & Konten Detail */
+.detail-badge-shared {
+    display: inline-block;
+    background: rgba(0, 102, 204, 0.1);
+    color: var(--primary-blue, #0066cc);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+}
+
+.detail-title-shared {
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.35;
+    color: var(--dark-text, #0F172A);
+    margin-bottom: 16px;
+}
+
+.detail-meta-shared {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color, #E2E8F0);
+    margin-bottom: 24px;
+    color: var(--text-muted, #64748B);
+    font-size: 14px;
+}
+
+.detail-body-shared {
+    font-size: 16px;
+    line-height: 1.85;
+    color: var(--dark-text, #334155);
+    white-space: pre-line;
+}
+
+/* ==========================================================================
+   SPESIFIK OVERRIDE DARK MODE
+   ========================================================================== */
+[data-theme="dark"] .detail-card-shared,
+[data-theme="dark"] .about-grid {
+    background-color: #1E293B !important;
+    border-color: #334155 !important;
+}
+
+[data-theme="dark"] .btn-back-shared {
+    background-color: #1E293B;
+    border-color: #334155;
+    color: #F1F5F9;
+}
+
+[data-theme="dark"] .detail-title-shared {
+    color: #F8FAFC !important;
+}
+
+[data-theme="dark"] .detail-body-shared {
+    color: #CBD5E1 !important;
+}
+
+[data-theme="dark"] .detail-meta-shared {
+    border-bottom-color: #334155 !important;
+    color: #94A3B8 !important;
+}
+
+[data-theme="dark"] .detail-badge-shared {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38BDF8;
+}

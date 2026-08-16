@@ -58,7 +58,7 @@ async function fetchProfileRt(rtContainer) {
         return `
           <div class="member-card-modern">
               <div class="rt-card-img-wrap">
-                  <span class="rt-banner-badge">RT ${noRt} / RW 05</span>
+                  <span class="rt-banner-badge">RT ${noRt} /  RW 11</span>
                   <img src="${foto}" 
                        alt="Foto Ketua RT ${noRt}" 
                        class="rt-portrait-img"

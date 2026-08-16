@@ -36,20 +36,44 @@ async function fetchDetailRt() {
                 return;
             }
 
-            const noRt = String(item.nomor_rt).padStart(2, '0');
+            const noRt = String(item.nomor_rt || '').padStart(2, '0');
 
+            // 1. Kumpulkan Foto Utama & Seluruh Foto Pendukung/Pelengkap
             let images = [];
-            if (Array.isArray(item.foto) && item.foto.length > 0) {
-                images = item.foto;
-            } else {
-                if (item.foto_utama) images.push(item.foto_utama);
-                if (item.foto_2) images.push(item.foto_2);
-                if (item.foto_3) images.push(item.foto_3);
-                if (item.foto_kegiatan) images.push(item.foto_kegiatan);
+
+            // Masukkan Foto Utama terlebih dahulu
+            if (item.foto_utama) {
+                images.push(item.foto_utama);
             }
 
+            // Masukkan Foto Pendukung (bisa berupa Array, JSON string, atau string koma)
+            if (item.foto_pendukung) {
+                if (Array.isArray(item.foto_pendukung)) {
+                    images.push(...item.foto_pendukung);
+                } else if (typeof item.foto_pendukung === "string") {
+                    try {
+                        const parsed = JSON.parse(item.foto_pendukung);
+                        if (Array.isArray(parsed)) images.push(...parsed);
+                        else images.push(item.foto_pendukung);
+                    } catch (e) {
+                        // Jika dipisah koma (contoh: "foto1.webp,foto2.webp")
+                        images.push(...item.foto_pendukung.split(',').map(s => s.trim()));
+                    }
+                }
+            }
+
+            // Fallback field lain jika ada (foto_2, foto_3, dsb)
+            if (item.foto_2) images.push(item.foto_2);
+            if (item.foto_3) images.push(item.foto_3);
+            if (item.foto_kegiatan) images.push(item.foto_kegiatan);
+
+            // Filter nilai kosong atau duplikat
+            images = [...new Set(images.filter(Boolean))];
+
+            // Default avatar jika tidak ada foto sama sekali
             if (images.length === 0) images.push('default-avatar.png');
 
+            // 2. Render Slider Gambar
             const imagesHtml = images.map((imgName, index) => {
                 const isDefault = imgName === 'default-avatar.png';
                 const src = isDefault ? `assets/img/${imgName}` : `assets/galery/rt/${imgName}`;
@@ -70,20 +94,18 @@ async function fetchDetailRt() {
                 </div>
             ` : '';
 
+            // 3. Format Ringkasan / Program Kerja
             let ringkasanListHtml = '';
             if (item.ringkasan && item.ringkasan.trim() !== '') {
                 const lines = item.ringkasan.split('\n').filter(line => line.trim() !== '');
                 ringkasanListHtml = lines.map(line => `<li>${line}</li>`).join('');
             } else {
-                ringkasanListHtml = `
-                    <li>Penataan Pos Kamling dan jadwal ronda malam.</li>
-                    <li>Pengelolaan kebersihan lingkungan dan pemilahan sampah.</li>
-                    <li>Pendataan ulang administrasi warga.</li>
-                `;
+                ringkasanListHtml = `<li>Belum ada ringkasan atau program kerja yang ditambahkan.</li>`;
             }
 
             const cakupanWilayah = `Wilayah RT ${noRt} / RW 11`;
 
+            // 4. Masukkan ke Container Detail HTML
             detailContainer.innerHTML = `
                 <div class="slider-wrapper about-slider" id="detailSlider">
                     ${imagesHtml}
@@ -94,14 +116,16 @@ async function fetchDetailRt() {
                     <span class="category" style="background: var(--primary-blue); color: white; padding: 6px 14px; border-radius: 20px; font-size: 12px;">
                         RT ${noRt} / RW 11
                     </span>
-                    <h3 style="margin-top: 15px; color: var(--primary-blue);">${item.nama_ketua || 'Belum diisi'}</h3>
+                    <h3 style="margin-top: 15px; color: var(--primary-blue); font-size: 24px;">
+                        ${item.nama_ketua || 'Belum diisi'}
+                    </h3>
                     
-                    <p style="color: var(--dark-text); font-weight: 600; margin-bottom: 10px;">
+                    <p style="color: var(--dark-text); font-weight: 600; margin-top: 10px; margin-bottom: 5px;">
                         <i class="fa-solid fa-phone" style="color: var(--accent-red);"></i> Kontak: ${item.nomor_telepon ? formatPhone(item.nomor_telepon) : '-'}
                     </p>
                     <p style="color: var(--text-muted); margin-bottom: 20px;">
-                        Masa Jabatan: ${item.masa_jabatan || '2024 - 2027'}<br>
-                        Cakupan Wilayah: ${cakupanWilayah}
+                        <strong>Masa Jabatan:</strong> ${item.masa_jabatan || '-'}<br>
+                        <strong>Cakupan:</strong> ${cakupanWilayah}
                     </p>
 
                     <h4 style="color: var(--dark-text); margin-bottom: 10px;">Ringkasan & Program Kerja RT:</h4>
@@ -111,6 +135,7 @@ async function fetchDetailRt() {
                 </div>
             `;
 
+            // Inisialisasi tombol next/prev jika foto lebih dari 1
             if (images.length > 1) {
                 setupManualSlider();
             }
