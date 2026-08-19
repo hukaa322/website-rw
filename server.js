@@ -17,6 +17,7 @@ app.use(
     origin: [
       "http://localhost:5500",
       "http://127.0.0.1:5500",
+      "http://website-rw.test/",
       "http://localhost",
     ],
     credentials: true,
@@ -207,14 +208,18 @@ app.post("/api/logout", (req, res) => {
 
 app.get("/api/admin/rt", authenticateToken, (req, res) => {
   const sql = `
-    SELECT r.*, GROUP_CONCAT(p.foto_url) as foto_pendukung 
+    SELECT 
+      r.*, 
+      u.username,
+      GROUP_CONCAT(p.foto_url) as foto_pendukung 
     FROM rt_details r 
+    LEFT JOIN users u ON r.user_id = u.id
     LEFT JOIN rt_photos p ON r.id = p.rt_id 
-    GROUP BY r.id ORDER BY r.nomor_rt ASC
+    GROUP BY r.id 
+    ORDER BY r.nomor_rt ASC
   `;
   db.query(sql, (err, results) => {
-    if (err)
-      return res.status(500).json({ success: false, message: err.message });
+    if (err) return res.status(500).json({ success: false, message: err.message });
     res.json({ success: true, data: results });
   });
 });
@@ -227,8 +232,9 @@ app.post(
     { name: "foto_pendukung", maxCount: 10 },
   ]),
   async (req, res) => {
+    const promiseDb = db.promise();
     try {
-      const { id, nomor_rt, nama_ketua, masa_jabatan, nomor_telepon, ringkasan } = req.body;
+      const { id, nomor_rt, nama_ketua, masa_jabatan, nomor_telepon, ringkasan, username, password } = req.body;
 
       if (!nomor_rt || !nama_ketua || !nomor_telepon) {
         return res.status(400).json({
@@ -242,69 +248,143 @@ app.post(
         fotoUtama = req.files["foto_utama"][0].filename;
       }
 
+      // ----------------- MODE EDIT DATA RT -----------------
       if (id && id.trim() !== "") {
-        let sqlUpdate = "UPDATE rt_details SET nomor_rt=?, nama_ketua=?, masa_jabatan=?, nomor_telepon=?, ringkasan=? WHERE id=?";
-        let params = [nomor_rt, nama_ketua, masa_jabatan, nomor_telepon, ringkasan, id];
-
-        if (fotoUtama) {
-          sqlUpdate = "UPDATE rt_details SET nomor_rt=?, nama_ketua=?, masa_jabatan=?, nomor_telepon=?, ringkasan=?, foto_utama=? WHERE id=?";
-          params = [nomor_rt, nama_ketua, masa_jabatan, nomor_telepon, ringkasan, fotoUtama, id];
+        // Ambil data RT yang ada untuk cek user_id
+        const [existing] = await promiseDb.query("SELECT * FROM rt_details WHERE id = ?", [id]);
+        if (existing.length === 0) {
+          return res.status(404).json({ success: false, message: "Data RT tidak ditemukan." });
         }
 
-        db.query(sqlUpdate, params, (err) => {
-          if (err) return res.status(500).json({ success: false, message: err.message });
-          return res.json({ success: true, message: "Data RT berhasil diperbarui!" });
-        });
-      } else {
-        const sqlInsert =
-          "INSERT INTO rt_details (nomor_rt, nama_ketua, masa_jabatan, nomor_telepon, ringkasan, foto_utama) VALUES (?, ?, ?, ?, ?, ?)";
+        let userId = existing[0].user_id;
 
-        db.query(
-          sqlInsert,
-          [nomor_rt, nama_ketua, masa_jabatan, nomor_telepon, ringkasan, fotoUtama],
-          async (err, result) => {
-            if (err) {
-              return res.status(500).json({
-                success: false,
-                message: err.code === "ER_DUP_ENTRY"
-                  ? `[MySQL Error] RT 0${nomor_rt} sudah pernah disimpan sebelumnya!`
-                  : `[MySQL Error] ${err.sqlMessage || err.message}`,
-              });
+        // Kelola Akun User (Tabel users)
+        if (username) {
+          if (userId) {
+            // Update user yang sudah terhubung
+            if (password && password.trim() !== "") {
+              const hashPw = await bcrypt.hash(password, 10);
+              await promiseDb.query(
+                "UPDATE users SET username = ?, password = ?, nama_lengkap = ? WHERE id = ?",
+                [username, hashPw, nama_ketua, userId]
+              );
+            } else {
+              await promiseDb.query(
+                "UPDATE users SET username = ?, nama_lengkap = ? WHERE id = ?",
+                [username, nama_ketua, userId]
+              );
             }
-
-            const rtId = result.insertId;
-
-            if (req.files && req.files["foto_pendukung"] && req.files["foto_pendukung"].length > 0) {
-              for (const file of req.files["foto_pendukung"]) {
-                await new Promise((resolve) => {
-                  db.query(
-                    "INSERT INTO rt_photos (rt_id, foto_url) VALUES (?, ?)",
-                    [rtId, file.filename],
-                    (err) => resolve()
-                  );
-                });
-              }
-            }
-
-            return res.json({
-              success: true,
-              message: "Data RT berhasil ditambahkan!",
-            });
+          } else {
+            // Jika data RT lama belum punya relasi user, buatkan user baru
+            const hashPw = password ? await bcrypt.hash(password, 10) : await bcrypt.hash("123456", 10);
+            const [newUser] = await promiseDb.query(
+              "INSERT INTO users (username, password, nama_lengkap, role) VALUES (?, ?, ?, 'pengurus')",
+              [username, hashPw, nama_ketua]
+            );
+            userId = newUser.insertId;
           }
-        );
+        }
+
+        // Update Tabel rt_details
+        let sqlUpdate = "UPDATE rt_details SET nomor_rt=?, nama_ketua=?, masa_jabatan=?, nomor_telepon=?, ringkasan=?, user_id=?";
+        let params = [nomor_rt, nama_ketua, masa_jabatan, nomor_telepon, ringkasan, userId];
+
+        if (fotoUtama) {
+          sqlUpdate += ", foto_utama=?";
+          params.push(fotoUtama);
+        }
+        sqlUpdate += " WHERE id=?";
+        params.push(id);
+
+        await promiseDb.query(sqlUpdate, params);
+
+        // Upload Foto Pendukung jika ada tambahan
+        if (req.files && req.files["foto_pendukung"] && req.files["foto_pendukung"].length > 0) {
+          for (const file of req.files["foto_pendukung"]) {
+            await promiseDb.query("INSERT INTO rt_photos (rt_id, foto_url) VALUES (?, ?)", [id, file.filename]);
+          }
+        }
+
+        return res.json({ success: true, message: "Data RT dan Akun berhasil diperbarui!" });
+      } 
+      
+      // ----------------- MODE TAMBAH DATA RT BARU -----------------
+      else {
+        let userId = null;
+
+        // 1. Buat User Pengurus Baru
+        if (username) {
+          const rawPassword = password && password.trim() !== "" ? password : "password123";
+          const hashPw = await bcrypt.hash(rawPassword, 10);
+
+          try {
+            const [userResult] = await promiseDb.query(
+              "INSERT INTO users (username, password, nama_lengkap, role) VALUES (?, ?, ?, 'pengurus')",
+              [username, hashPw, nama_ketua]
+            );
+            userId = userResult.insertId;
+          } catch (userErr) {
+            if (userErr.code === "ER_DUP_ENTRY") {
+              return res.status(400).json({ success: false, message: `Username '${username}' sudah digunakan, silakan gunakan username lain.` });
+            }
+            throw userErr;
+          }
+        }
+
+        // 2. Insert ke Tabel rt_details
+        const sqlInsert = `
+          INSERT INTO rt_details (user_id, nomor_rt, nama_ketua, masa_jabatan, nomor_telepon, ringkasan, foto_utama) 
+          VALUES (?, ?, ?, ?, ?, ?, ?)
+        `;
+        const [result] = await promiseDb.query(sqlInsert, [
+          userId,
+          nomor_rt,
+          nama_ketua,
+          masa_jabatan,
+          nomor_telepon,
+          ringkasan,
+          fotoUtama,
+        ]);
+
+        const rtId = result.insertId;
+
+        // 3. Insert Foto Pendukung
+        if (req.files && req.files["foto_pendukung"] && req.files["foto_pendukung"].length > 0) {
+          for (const file of req.files["foto_pendukung"]) {
+            await promiseDb.query("INSERT INTO rt_photos (rt_id, foto_url) VALUES (?, ?)", [rtId, file.filename]);
+          }
+        }
+
+        return res.json({ success: true, message: "Data RT dan Akun Pengurus berhasil ditambahkan!" });
       }
     } catch (err) {
-      res.status(500).json({ success: false, message: "Server Crash: " + err.message });
+      if (err.code === "ER_DUP_ENTRY") {
+        return res.status(400).json({ success: false, message: `[MySQL] Nomor RT sudah terdaftar sebelumnya!` });
+      }
+      return res.status(500).json({ success: false, message: "Server Error: " + err.message });
     }
   }
 );
 
-app.delete("/api/admin/rt/:id", authenticateToken, (req, res) => {
+app.delete("/api/admin/rt/:id", authenticateToken, async (req, res) => {
   const { id } = req.params;
-  db.query("DELETE FROM rt_details WHERE id = ?", [id], (err) => {
-    if (err) return res.status(500).json({ success: false, message: err.message });
-    res.json({ success: true, message: "Data RT berhasil dihapus." });
-  });
+  const promiseDb = db.promise();
+  try {
+    const [rows] = await promiseDb.query("SELECT user_id FROM rt_details WHERE id = ?", [id]);
+    const userId = rows.length > 0 ? rows[0].user_id : null;
+
+    // Hapus detail RT (otomatis trigger hapus rt_photos jika cascade, atau hapus baris detail)
+    await promiseDb.query("DELETE FROM rt_details WHERE id = ?", [id]);
+
+    // Hapus user pengurus yang bersangkutan
+    if (userId) {
+      await promiseDb.query("DELETE FROM users WHERE id = ?", [userId]);
+    }
+
+    res.json({ success: true, message: "Data RT dan Akun Login berhasil dihapus." });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 

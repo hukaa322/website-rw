@@ -5,6 +5,9 @@ window.openRtModal = function(data = null) {
     const idInput = document.getElementById("rtId");
     if (idInput) idInput.value = "";
 
+    const usernameInput = document.getElementById("rt_username");
+    const passwordInput = document.getElementById("rt_password");
+
     if (data) {
         if (document.getElementById("rtId")) document.getElementById("rtId").value = data.id || "";
         if (document.getElementById("nomor_rt")) document.getElementById("nomor_rt").value = data.nomor_rt || "";
@@ -12,12 +15,33 @@ window.openRtModal = function(data = null) {
         if (document.getElementById("nomor_telepon")) document.getElementById("nomor_telepon").value = data.nomor_telepon || "";
         if (document.getElementById("ringkasan")) document.getElementById("ringkasan").value = data.ringkasan || "";
         if (document.getElementById("masa_jabatan")) document.getElementById("masa_jabatan").value = data.masa_jabatan || "";
+        
+        // Mode Edit: Username terisi jika data relasi user tersedia
+        if (usernameInput) usernameInput.value = data.username || `rt${String(data.nomor_rt).padStart(2, '0')}`;
+        if (passwordInput) {
+            passwordInput.required = false;
+            passwordInput.placeholder = "Kosongkan jika password tidak diganti";
+        }
+    } else {
+        // Mode Tambah Baru
+        if (passwordInput) {
+            passwordInput.required = true;
+            passwordInput.placeholder = "Masukkan password baru";
+        }
     }
 
     const modal = document.getElementById("rtModal");
     if (modal) modal.style.display = "flex";
 };
 
+// Event listener pembantu: generate otomatis username saat nomor RT dipilih
+document.getElementById("nomor_rt")?.addEventListener("change", function(e) {
+    const usernameInput = document.getElementById("rt_username");
+    const rtId = document.getElementById("rtId").value;
+    if (!rtId && usernameInput && e.target.value) {
+        usernameInput.value = `rt${String(e.target.value).padStart(2, '0')}`;
+    }
+});
 window.closeRtModal = function() {
     const modal = document.getElementById("rtModal");
     if (modal) modal.style.display = "none";
