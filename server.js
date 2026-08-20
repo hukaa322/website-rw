@@ -18,8 +18,8 @@ app.use(
       "http://localhost:5500",
       "http://127.0.0.1:5500",
       "http://website-rw.test/",
-      "http://localhost",
-    ],
+      "https://ffed-2a0d-5600-178-6000-915c-246a-a142-66e7.ngrok-free.app",
+        ],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization", "ngrok-skip-browser-warning"]
   }),
@@ -826,6 +826,232 @@ function cleanOldInvoices() {
     console.error("[Auto-Clean Error]", err);
   }
 }
+
+// --- ENDPOINT PENGAJUAN SURAT WARGA PUBLIK ---
+app.post("/api/public/surat-pengantar", async (req, res) => {
+  try {
+    const {
+      rt_target,
+      nama_lengkap,
+      nik,
+      no_wa,
+      jenis_kelamin,
+      tempat_tgl_lahir,
+      status_perkawinan,
+      kewarganegaraan,
+      agama,
+      pekerjaan,
+      pendidikan_terakhir,
+      alamat_blok_no,
+      keperluan_opsi,
+      keperluan_keterangan,
+    } = req.body;
+
+    if (!rt_target || !nama_lengkap || !nik || !no_wa || !alamat_blok_no) {
+      return res.status(400).json({
+        success: false,
+        message: "Data pemohon bertanda bintang (*) wajib diisi lengkap.",
+      });
+    }
+
+    const sql = `
+      INSERT INTO surat_pengantar (
+        rt_target, nama_lengkap, nik, no_wa, jenis_kelamin, 
+        tempat_tgl_lahir, status_perkawinan, kewarganegaraan, 
+        agama, pekerjaan, pendidikan_terakhir, alamat_blok_no, 
+        keperluan_opsi, keperluan_keterangan, status
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending_rt')
+    `;
+
+    const params = [
+      rt_target,
+      nama_lengkap,
+      nik,
+      no_wa,
+      jenis_kelamin,
+      tempat_tgl_lahir,
+      status_perkawinan,
+      kewarganegaraan || "Indonesia",
+      agama,
+      pekerjaan,
+      pendidikan_terakhir,
+      alamat_blok_no,
+      keperluan_opsi,
+      keperluan_keterangan || null,
+    ];
+
+    db.query(sql, params, (err, result) => {
+      if (err) {
+        console.error("Database Insert Error:", err);
+        return res.status(500).json({ success: false, message: err.message });
+      }
+
+      return res.json({
+        success: true,
+        message: "Permohonan surat pengantar berhasil dikirim ke RT.",
+        insertId: result.insertId,
+      });
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// --- MANAJEMEN TTD DINAMIS DENGAN FILE JSON (TANPA DATABASE) ---
+const SIGNATURES_JSON = path.join(__dirname, "assets/signatures_rt.json");
+
+function getSignaturesData() {
+  try {
+    if (!fs.existsSync(SIGNATURES_JSON)) return {};
+    return JSON.parse(fs.readFileSync(SIGNATURES_JSON, "utf-8")) || {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveSignatureData(rtNumber, signatureBase64) {
+  const data = getSignaturesData();
+  data[`rt_${rtNumber}`] = {
+    signature: signatureBase64,
+    updated_at: new Date().toISOString()
+  };
+  fs.writeFileSync(SIGNATURES_JSON, JSON.stringify(data, null, 2));
+}
+
+// 1. Ambil TTD Tersimpan untuk RT terkait
+app.get("/api/rt/saved-signature", authenticateToken, (req, res) => {
+  const username = req.user.username || "";
+  const rtNumber = parseInt(username.replace(/[^0-9]/g, ""), 10) || 1;
+  const data = getSignaturesData();
+  const saved = data[`rt_${rtNumber}`] || null;
+  res.json({ success: true, data: saved });
+});
+
+// 2. Simpan TTD Profil RT (Draw atau Upload Base64) ke JSON
+app.post("/api/rt/save-signature", authenticateToken, (req, res) => {
+  const { signature } = req.body;
+  if (!signature) return res.status(400).json({ success: false, message: "Tanda tangan kosong." });
+
+  const username = req.user.username || "";
+  const rtNumber = parseInt(username.replace(/[^0-9]/g, ""), 10) || 1;
+  saveSignatureData(rtNumber, signature);
+
+  res.json({ success: true, message: "Tanda tangan profil RT berhasil disimpan." });
+});
+
+// 3. Ambil Antrean Surat Sesuai Wilayah RT yang Login
+app.get("/api/rt/surat-antrean", authenticateToken, (req, res) => {
+  const username = req.user.username || "";
+  const rtNumber = parseInt(username.replace(/[^0-9]/g, ""), 10) || 1;
+
+  const sql = `
+    SELECT * FROM surat_pengantar 
+    WHERE rt_target = ? AND status = 'pending_rt' 
+    ORDER BY created_at DESC
+  `;
+  db.query(sql, [rtNumber], (err, rows) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, data: rows });
+  });
+});
+
+// 4. Pengesahan Surat (Setujui & Sematkan TTD)
+app.post("/api/rt/surat/:id/approve", authenticateToken, (req, res) => {
+  const { id } = req.params;
+  const { signature } = req.body;
+  const username = req.user.username || "";
+  const rtNumber = parseInt(username.replace(/[^0-9]/g, ""), 10) || 1;
+
+  // Gunakan TTD yang dikirimkan atau ambil dari JSON profil tersimpan
+  let ttdFinal = signature;
+  if (!ttdFinal) {
+    const data = getSignaturesData();
+    ttdFinal = data[`rt_${rtNumber}`]?.signature || null;
+  }
+
+  if (!ttdFinal) {
+    return res.status(400).json({ success: false, message: "Tanda tangan digital belum dibubuhkan." });
+  }
+
+  // Format Nomor Surat Resmi: [ID]/SP/RT.[0X]/RW.011/[TAHUN]
+  const currentYear = new Date().getFullYear();
+  const padRt = String(rtNumber).padStart(2, "0");
+  const nomorSurat = `${String(id).padStart(3, "0")}/SP/RT.${padRt}/RW.011/${currentYear}`;
+
+  const sql = `
+    UPDATE surat_pengantar 
+    SET nomor_surat = ?, status = 'approved_rt', ttd_rt_image = ?, tgl_ttd_rt = NOW() 
+    WHERE id = ? AND rt_target = ?
+  `;
+
+  db.query(sql, [nomorSurat, ttdFinal, id, rtNumber], (err, result) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, message: `Surat Pengantar #${id} berhasil disahkan dan diteruskan ke Ketua RW.` });
+  });
+});
+
+// --- ENDPOINTS PENGESAHAN SURAT RW ---
+
+// 1. Ambil Surat yang sudah disetujui RT (Status: approved_rt atau selesai)
+app.get("/api/rw/surat-antrean", authenticateToken, (req, res) => {
+  const sql = `
+    SELECT * FROM surat_pengantar 
+    WHERE status IN ('approved_rt', 'selesai') 
+    ORDER BY (status = 'approved_rt') DESC, tgl_ttd_rt DESC
+  `;
+  db.query(sql, (err, rows) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, data: rows });
+  });
+});
+
+// 2. Simpan TTD Profil Ketua RW (File JSON)
+app.post("/api/rw/save-signature", authenticateToken, (req, res) => {
+  const { signature } = req.body;
+  if (!signature) return res.status(400).json({ success: false, message: "Tanda tangan kosong." });
+
+  const data = getSignaturesData();
+  data["rw_011"] = {
+    signature: signature,
+    updated_at: new Date().toISOString()
+  };
+  fs.writeFileSync(SIGNATURES_JSON, JSON.stringify(data, null, 2));
+
+  res.json({ success: true, message: "Tanda tangan Ketua RW berhasil disimpan." });
+});
+
+// 3. Ambil TTD Profil Ketua RW
+app.get("/api/rw/saved-signature", authenticateToken, (req, res) => {
+  const data = getSignaturesData();
+  res.json({ success: true, data: data["rw_011"] || null });
+});
+
+// 4. Ketua RW Sahkan Surat Pengantar (Status -> selesai)
+app.post("/api/rw/surat/:id/approve", authenticateToken, (req, res) => {
+  const { id } = req.params;
+  const { signature } = req.body;
+
+  let ttdFinal = signature;
+  if (!ttdFinal) {
+    const data = getSignaturesData();
+    ttdFinal = data["rw_011"]?.signature || null;
+  }
+
+  if (!ttdFinal) {
+    return res.status(400).json({ success: false, message: "Tanda tangan digital Ketua RW belum disematkan." });
+  }
+
+  const sql = `
+    UPDATE surat_pengantar 
+    SET status = 'selesai', ttd_rw_image = ?, tgl_ttd_rw = NOW() 
+    WHERE id = ?
+  `;
+
+  db.query(sql, [ttdFinal, id], (err, result) => {
+    if (err) return res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, message: `Surat Pengantar #${id} berhasil disahkan oleh Ketua RW 011.` });
+  });
+});
 
 // Jalankan pembersihan saat server start dan setiap 24 jam sekali
 cleanOldInvoices();

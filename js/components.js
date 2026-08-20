@@ -29,12 +29,14 @@ window.addEventListener("DOMContentLoaded", async () => {
     await loadComponent("galeri", "pages/galeri.html");
     await loadComponent("layanan", "pages/layanan.html");
 
-    // SETELAH DILUAT: Panggil fungsi render berita secara manual
+    // Inisialisasi modul setelah HTML berhasil dipasang di DOM
     if (typeof loadHomeNews === "function") {
         loadHomeNews();
     }
+    if (typeof window.initLayananPage === "function") {
+        window.initLayananPage();
+    }
 
-    // Fitur Smooth Scroll dengan Offset Height Navbar
     initSmoothScroll();
 });
 
@@ -48,7 +50,7 @@ function initSmoothScroll() {
             const targetElement = document.querySelector(targetId);
             if (targetElement) {
                 e.preventDefault();
-                const navbarHeight = 75; // Sesuaikan dengan tinggi navbar
+                const navbarHeight = 75;
                 const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
                 const offsetPosition = elementPosition - navbarHeight;
 
@@ -57,7 +59,6 @@ function initSmoothScroll() {
                     behavior: "smooth"
                 });
 
-                // Update class active pada link yang diklik
                 document.querySelectorAll('.nav-desktop a, .bottom-nav .nav-item').forEach(nav => nav.classList.remove('active'));
                 anchor.classList.add('active');
             }

@@ -38,17 +38,17 @@ const galeriConfig = {
         placeholderDeskripsi: 'Tuliskan rangkuman jalannya kegiatan...'
     },
     'ikon': {
-        tabTitle: 'Ikon / Tokoh Warga',
-        btnTambah: 'Tambah Tokoh',
-        thJudul: 'Nama Tokoh',
-        thKontak: 'Peran / Profesi',
-        thDeskripsi: 'Profil Singkat',
-        labelJudul: 'Nama Lengkap Tokoh',
-        placeholderJudul: 'Contoh: Bpk. H. Ahmad Sudirman',
-        labelKontak: 'Profesi / Peran / Jabatan',
-        placeholderKontak: 'Contoh: Tokoh Agama / Sesepuh RW / Pembina UMKM',
-        labelDeskripsi: 'Profil Singkat & Dedikasi',
-        placeholderDeskripsi: 'Tuliskan kontribusi atau rekam jejak beliau...'
+        tabTitle: 'Ikon & Landmark Desa',
+        btnTambah: 'Tambah Ikon Tempat',
+        thJudul: 'Nama Tempat / Landmark',
+        thKontak: 'Lokasi / Alamat',
+        thDeskripsi: 'Deskripsi Tempat',
+        labelJudul: 'Nama Tempat / Fasilitas / Landmark',
+        placeholderJudul: 'Contoh: Gapura Utama Desa, Balai Pertemuan RW, Taman Pintar',
+        labelKontak: 'Lokasi / Titik Alamat',
+        placeholderKontak: 'Contoh: Jl. Utama RT 02 / Samping Balai Warga',
+        labelDeskripsi: 'Deskripsi & Keunikan Tempat',
+        placeholderDeskripsi: 'Jelaskan fungsi, daya tarik, atau sejarah singkat ikon tempat ini...'
     }
 };
 

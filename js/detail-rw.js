@@ -136,7 +136,7 @@ function renderOrbitStage(rwContainer) {
       badgeText: leaderStatus.badgeText,
       badgeClass: leaderStatus.badgeClass,
       name: activeCenterLeader.nama_ketua || "Ketua RW",
-      role: "Ketua RW 05",
+      role: "Ketua RW 11",
       periode: activeCenterLeader.periode
         ? `Periode ${activeCenterLeader.periode}`
         : "Masa Jabatan Aktif",
@@ -149,7 +149,7 @@ function renderOrbitStage(rwContainer) {
       badgeText: leaderStatus.badgeText,
       badgeClass: leaderStatus.badgeClass,
       name: activeCenterLeader.nama_wakil || "Wakil Ketua RW",
-      role: "Wakil Ketua RW 05",
+      role: "Wakil Ketua RW 11",
       periode: activeCenterLeader.periode
         ? `Periode ${activeCenterLeader.periode}`
         : "Masa Jabatan Aktif",

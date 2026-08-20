@@ -4,9 +4,7 @@
   function formatWaNumber(phone) {
     if (!phone) return "";
     let clean = phone.toString().replace(/[^0-9]/g, "");
-    if (clean.startsWith("0")) {
-      clean = "62" + clean.slice(1);
-    }
+    if (clean.startsWith("0")) clean = "62" + clean.slice(1);
     return clean;
   }
 
@@ -44,48 +42,48 @@
     const filtered = listLayanan.filter(item => item.jenis_layanan === kategori);
 
     if (filtered.length === 0) {
-      select.innerHTML = `<option value="">-- Belum ada data untuk kategori ini --</option>`;
-      toggleQrisBox(null);
+      select.innerHTML = `<option value="">-- Belum ada layanan terdaftar untuk kategori ini --</option>`;
+      toggleViewByKategori(kategori, null);
       return;
     }
 
-    select.innerHTML = `<option value="">-- Pilih Wilayah / Kegiatan (${filtered.length}) --</option>` +
-      filtered.map(item => {
-        return `<option value="${item.id}">[${item.target_wilayah}] - ${item.nama_kegiatan}</option>`;
-      }).join("");
+    select.innerHTML = `<option value="">-- Pilih Wilayah / RT Tujuan (${filtered.length}) --</option>` +
+      filtered.map(item => `<option value="${item.id}">[${item.target_wilayah}] - ${item.nama_kegiatan}</option>`).join("");
 
-    toggleQrisBox(null);
+    toggleViewByKategori(kategori, null);
   }
 
-  function toggleQrisBox(selectedItem) {
-    const qrisContainer = document.getElementById("qrisContainer");
+  function toggleViewByKategori(kategori, selectedItem) {
+    const secSurat = document.getElementById("sectionSuratPengantar");
+    const secIuran = document.getElementById("sectionIuran");
+    const btnSubmit = document.getElementById("btnSubmitLayanan");
     const qrisWrapper = document.getElementById("qrisImageWrapper");
-    const inputBukti = document.getElementById("inputBuktiTransfer");
-    const previewWrapper = document.getElementById("previewBuktiWrapper");
-    const imgPreview = document.getElementById("imgPreviewBukti");
-
-    if (!qrisContainer || !qrisWrapper) return;
-
-    const kategori = document.getElementById("layananKategori")?.value;
     const baseBackend = window.API?.BASE_URL || "http://localhost:3000";
 
-    if (kategori === "iuran") {
-      qrisContainer.style.display = "block";
-      if (selectedItem && selectedItem.gambar_qris) {
+    if (kategori === "surat") {
+      if (secSurat) secSurat.style.display = "block";
+      if (secIuran) secIuran.style.display = "none";
+      if (btnSubmit) {
+        btnSubmit.style.background = "#2563eb";
+        btnSubmit.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Ajukan Surat & Beri Tahu RT`;
+      }
+    } else {
+      if (secSurat) secSurat.style.display = "none";
+      if (secIuran) secIuran.style.display = "block";
+      if (btnSubmit) {
+        btnSubmit.style.background = "#16a34a";
+        btnSubmit.innerHTML = `<i class="fa-brands fa-whatsapp fa-xl"></i> Kirim Konfirmasi via WhatsApp`;
+      }
+
+      if (selectedItem && selectedItem.gambar_qris && qrisWrapper) {
         qrisWrapper.innerHTML = `
           <img src="${baseBackend}/assets/galery/layanan/${selectedItem.gambar_qris}" 
                alt="QRIS ${selectedItem.nama_kegiatan}" 
                style="max-width: 170px; width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 6px auto; display: block;">
         `;
-      } else {
+      } else if (qrisWrapper) {
         qrisWrapper.innerHTML = `<p style="font-size: 0.8rem; color: #94a3b8; margin: 4px 0;">QRIS belum diunggah pengurus.</p>`;
       }
-    } else {
-      qrisContainer.style.display = "none";
-      qrisWrapper.innerHTML = "";
-      if (inputBukti) inputBukti.value = "";
-      if (previewWrapper) previewWrapper.style.display = "none";
-      if (imgPreview) imgPreview.src = "";
     }
   }
 
@@ -122,93 +120,145 @@
 
     if (tujuanSelect) {
       tujuanSelect.addEventListener("change", () => {
-        const id = tujuanSelect.value;
-        const item = listLayanan.find(l => l.id == id);
-        toggleQrisBox(item);
+        const selectedId = tujuanSelect.value;
+        const item = listLayanan.find(l => l.id == selectedId);
+        toggleViewByKategori(kategoriSelect.value, item);
       });
     }
 
-  if (form && form.dataset.initialized !== "true") {
-      form.dataset.initialized = "true";
-      form.addEventListener("submit", async (e) => {
+    if (form) {
+      form.onsubmit = async (e) => {
         e.preventDefault();
 
-        const selectedId = tujuanSelect.value;
-        const item = listLayanan.find(l => l.id == selectedId);
-        const catatan = document.getElementById("catatanWarga").value;
-        const kategori = document.getElementById("layananKategori").value;
+        const kategori = kategoriSelect.value;
+        const selectedLayananId = tujuanSelect.value;
 
-        if (!item) {
-          alert("Silakan pilih Wilayah / Kegiatan terlebih dahulu!");
+        if (!selectedLayananId) {
+          alert("Silakan pilih RT / Layanan tujuan terlebih dahulu!");
           tujuanSelect.focus();
           return;
         }
 
-        const phone = formatWaNumber(item.nomor_telepon);
-        let uploadedBuktiUrl = "";
+        const selectedLayanan = listLayanan.find(l => l.id == selectedLayananId);
+        if (!selectedLayanan) {
+          alert("Data layanan RT tidak valid.");
+          return;
+        }
 
-        // PROSES UPLOAD BUKTI TRANSFER JIKA KATEGORI IURAN
-        if (kategori === "iuran" && inputBukti && inputBukti.files.length > 0) {
+        const rtNumber = parseInt(selectedLayanan.target_wilayah.replace(/[^0-9]/g, ''), 10) || 1;
+        const waRT = formatWaNumber(selectedLayanan.nomor_telepon);
+
+        // ================= FLOW SURAT ADMINISTRASI =================
+        if (kategori === "surat") {
+          const payload = {
+            rt_target: rtNumber,
+            nama_lengkap: document.getElementById("suratNama").value.trim(),
+            nik: document.getElementById("suratNik").value.trim(),
+            no_wa: document.getElementById("suratWa").value.trim(),
+            jenis_kelamin: document.getElementById("suratJk").value,
+            tempat_tgl_lahir: document.getElementById("suratTtl").value.trim(),
+            status_perkawinan: document.getElementById("suratStatusKawin").value,
+            kewarganegaraan: document.getElementById("suratWargaNegara").value.trim(),
+            agama: document.getElementById("suratAgama").value,
+            pekerjaan: document.getElementById("suratPekerjaan").value.trim(),
+            pendidikan_terakhir: document.getElementById("suratPendidikan").value.trim(),
+            alamat_blok_no: document.getElementById("suratAlamat").value.trim(),
+            keperluan_opsi: document.getElementById("suratKeperluanOpsi").value,
+            keperluan_keterangan: document.getElementById("suratKeperluanDetail").value.trim()
+          };
+
+          if (!payload.nama_lengkap || !payload.nik || !payload.no_wa || !payload.tempat_tgl_lahir || !payload.alamat_blok_no) {
+            alert("Harap lengkapi seluruh field data pemohon bertanda bintang (*)");
+            return;
+          }
+
           btnSubmit.disabled = true;
-          btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Mengunggah Bukti Bayar...`;
+          btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan ke Database...`;
 
           try {
             const baseBackend = window.API?.BASE_URL || "http://localhost:3000";
-            const uploadEndpoint = `${baseBackend}/api/public/upload-invoice`;
+            const endpoint = (window.API && window.API.SURAT && window.API.SURAT.SUBMIT_PUBLIC) 
+                              ? window.API.SURAT.SUBMIT_PUBLIC 
+                              : `${baseBackend}/api/public/surat-pengantar`;
 
+            const res = await fetch(endpoint, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "69420"
+              },
+              body: JSON.stringify(payload)
+            });
+
+            const result = await res.json();
+
+            if (result.success) {
+              const pesanWA = `*PENGAJUAN SURAT PENGANTAR (PORTAL WARGA)*\n\n` +
+                `Halo Pengurus ${selectedLayanan.target_wilayah},\n` +
+                `Terdapat permohonan surat baru yang masuk dan menunggu pengesahan:\n\n` +
+                `• *No. Permohonan:* #${result.insertId}\n` +
+                `• *Nama Pemohon:* ${payload.nama_lengkap}\n` +
+                `• *NIK:* ${payload.nik}\n` +
+                `• *Alamat:* ${payload.alamat_blok_no}\n` +
+                `• *Keperluan:* ${payload.keperluan_opsi}\n\n` +
+                `Mohon login ke *Portal Pengesahan RT* untuk memeriksa berkas dan membubuhkan tanda tangan digital. Terima kasih.`;
+
+              alert(`Pengajuan berhasil disimpan ke database (ID: #${result.insertId})!\n\nAnda akan diarahkan ke WhatsApp RT untuk mengirimkan notifikasi pengingat.`);
+              
+              form.reset();
+              populateDropdownLayanan();
+              window.open(`https://wa.me/${waRT}?text=${encodeURIComponent(pesanWA)}`, "_blank");
+            } else {
+              alert("Gagal mengajukan surat: " + (result.message || "Terjadi kesalahan"));
+            }
+          } catch (err) {
+            console.error("Error submit surat:", err);
+            alert("Gagal terhubung ke server backend.");
+          } finally {
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Ajukan Surat & Beri Tahu RT`;
+          }
+          return;
+        }
+
+        // ================= FLOW PEMBAYARAN IURAN =================
+        const catatan = document.getElementById("catatanWarga")?.value || "";
+        let uploadedBuktiUrl = "";
+
+        if (inputBukti && inputBukti.files.length > 0) {
+          btnSubmit.disabled = true;
+          btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Mengunggah Bukti...`;
+
+          try {
+            const baseBackend = window.API?.BASE_URL || "http://localhost:3000";
             const formData = new FormData();
             formData.append("bukti_transfer", inputBukti.files[0]);
 
-            // Gunakan fetch native agar Browser mengatur header Content-Type & Multipart Boundary secara otomatis
-            const uploadRes = await fetch(uploadEndpoint, {
+            const uploadRes = await fetch(`${baseBackend}/api/public/upload-invoice`, {
               method: "POST",
               body: formData,
-              headers: {
-                "ngrok-skip-browser-warning": "69420"
-              }
+              headers: { "ngrok-skip-browser-warning": "69420" }
             });
-
             const uploadJson = await uploadRes.json();
-
             if (uploadJson.success && uploadJson.fileUrl) {
               uploadedBuktiUrl = uploadJson.fileUrl;
-            } else {
-              console.warn("Upload gagal:", uploadJson.message);
-              alert("Gagal mengunggah bukti: " + (uploadJson.message || "Periksa server"));
             }
           } catch (uploadErr) {
-            console.error("Error saat upload file:", uploadErr);
-            alert("Gagal terhubung ke server untuk unggah bukti.");
+            console.warn("Upload gagal:", uploadErr);
           } finally {
             btnSubmit.disabled = false;
-            btnSubmit.innerHTML = `<i class="fa-brands fa-whatsapp fa-xl"></i> Kirim ke WhatsApp Pengurus`;
           }
         }
 
-        let pesan = "";
+        let pesanIuran = `*KONFIRMASI PEMBAYARAN IURAN*\n` +
+                         `*Wilayah/Kegiatan:* ${selectedLayanan.nama_kegiatan} (${selectedLayanan.target_wilayah})\n` +
+                         `*Catatan:* ${catatan}\n`;
 
-        if (kategori === "iuran") {
-          pesan = `*KONFIRMASI PEMBAYARAN IURAN*\n` +
-                  `*Wilayah/Kegiatan:* ${item.nama_kegiatan} (${item.target_wilayah})\n` +
-                  `*Catatan:* ${catatan}\n`;
+        if (uploadedBuktiUrl) pesanIuran += `*Link Bukti Pembayaran:*\n${uploadedBuktiUrl}\n\n`;
+        pesanIuran += `Mohon dicek dan dikonfirmasi. Terima kasih.`;
 
-          if (uploadedBuktiUrl) {
-            pesan += `*Link Bukti Pembayaran:*\n${uploadedBuktiUrl}\n\n`;
-          } else {
-            pesan += `*Bukti Pembayaran:* (Foto dilampirkan langsung di chat ini)\n\n`;
-          }
-
-          pesan += `Mohon dicek dan dikonfirmasi. Terima kasih.`;
-        } else {
-          pesan = `*PENGAJUAN SURAT & ADMINISTRASI*\n` +
-                  `*Kegiatan/Wilayah:* ${item.nama_kegiatan} (${item.target_wilayah})\n` +
-                  `*Catatan / Keperluan:*\n${catatan}\n\n` +
-                  `Mohon dibantu proses lebih lanjut. Terima kasih.`;
-        }
-
-        const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(pesan)}`;
-        window.open(waUrl, "_blank");
-      });
+        window.open(`https://wa.me/${waRT}?text=${encodeURIComponent(pesanIuran)}`, "_blank");
+      };
     }
   }
 
@@ -261,18 +311,11 @@
     }).join("");
   }
 
-  function checkAndInit() {
-    if (document.getElementById("formLayananWarga") && document.getElementById("tujuanLayanan")) {
+  window.initLayananPage = function () {
+    const form = document.getElementById("formLayananWarga");
+    if (form) {
       setupFormEvents();
       fetchLayananData();
-    } else {
-      setTimeout(checkAndInit, 100);
     }
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", checkAndInit);
-  } else {
-    checkAndInit();
-  }
+  };
 })();

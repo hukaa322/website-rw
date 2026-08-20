@@ -18,8 +18,6 @@
     <link rel="stylesheet" href="../css/style-landing.css">
     <link rel="stylesheet" href="css/admin-layout.css">
     <link rel="stylesheet" href="css/galeri-admin.css">
-
-    <!-- PERBAIKAN 1: HAPUS SCRIPT AUTH-CHECK DARI SINI -->
 </head>
 <body>
 
@@ -34,19 +32,14 @@
     <!-- CONTAINER FOOTNAVBAR HP -->
     <div id="footnavbar-wrapper"></div>
 
-    <!-- PERBAIKAN 2: URUTAN SCRIPT SEBELUM TUTUP BODY -->
-    <!-- 1. api.js WAJIB dimuat paling pertama -->
+    <!-- SCRIPT URUTAN EKSEKUSI -->
     <script src="../js/api.js"></script>
-
-    <!-- 2. auth-check.js dimuat kedua setelah api.js siap -->
     <script src="../js/auth-check.js"></script>
-
-    <!-- 3. Modul Router & CRUD -->
     <script src="js/admin-router.js"></script>
     <script src="js/news-module.js"></script>
     <script src="js/detail-rw.js"></script>
     <script src="js/rt-module.js"></script>
-    <script src="js/galery-module.js?v=1.1""></script>
+    <script src="js/galery-module.js"></script>
     <script src="js/layanan-module.js"></script>
 
 </body>

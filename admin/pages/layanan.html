@@ -1,52 +1,46 @@
 <div class="crud-card">
     <!-- Header Section & Filter Tab -->
     <div class="gallery-page-header" style="margin-bottom: 20px;">
-        <h2 class="gallery-title">Kelola Layanan Warga</h2>
-        <p class="gallery-subtitle">Kelola pengajuan surat, iuran, dan jadwal layanan berbasis WhatsApp</p>
+        <h2 class="gallery-title">Kelola Layanan Warga & Pengesahan Surat</h2>
+        <p class="gallery-subtitle">Kelola master kontak layanan, verifikasi surat pengantar RT/RW, dan cetak PDF.</p>
         
         <div class="gallery-pill-filter">
-            <button class="pill-btn active" onclick="switchTab('surat', this)">
-                <i class="fa-solid fa-file-signature"></i> Surat Administrasi
+            <button class="pill-btn active" onclick="switchTab('pengesahan_rw', this)">
+                <i class="fa-solid fa-stamp"></i> Pengesahan Surat Masuk (RW)
+            </button>
+            <button class="pill-btn" onclick="switchTab('surat', this)">
+                <i class="fa-solid fa-file-signature"></i> Master Kontak Surat
             </button>
             <button class="pill-btn" onclick="switchTab('iuran', this)">
-                <i class="fa-solid fa-receipt"></i> Pembayaran Iuran
+                <i class="fa-solid fa-receipt"></i> Master Pembayaran Iuran
             </button>
             <button class="pill-btn" onclick="switchTab('layanan', this)">
-                <i class="fa-solid fa-calendar-check"></i> Kesehatan & Keamanan
+                <i class="fa-solid fa-calendar-check"></i> Kontak Siaga & Keamanan
             </button>
         </div>
     </div>
 
-    <!-- Actions Bar (Pencarian & Tombol Tambah) -->
+    <!-- Actions Bar -->
     <div class="crud-header">
         <div class="header-info">
-            <h3 id="tab-title">Daftar Layanan Surat</h3>
+            <h3 id="tab-title">Antrean Permohonan Surat dari RT</h3>
             <span class="badge-count" id="total-count">0 Data</span>
         </div>
         <div class="header-actions">
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="searchLayanan" placeholder="Cari kegiatan..." onkeyup="filterLayananTable()">
-            </div>
-            <button class="btn btn-primary" onclick="openLayananModal()">
-                <i class="fa-solid fa-plus"></i> Tambah Layanan
+            <button id="btnAturTtdRw" class="btn btn-secondary" onclick="openRwSignatureModal()" style="margin-right: 8px;">
+                <i class="fa-solid fa-pen-nib"></i> Atur TTD Digital RW
+            </button>
+            <button id="btnTambahLayananMaster" class="btn btn-primary" style="display:none;" onclick="openLayananModal()">
+                <i class="fa-solid fa-plus"></i> Tambah Master Layanan
             </button>
         </div>
     </div>
 
-    <!-- Tabel Data Layanan -->
+    <!-- Tabel Data -->
     <div class="table-responsive">
         <table class="admin-table">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Nama Kegiatan / Layanan</th>
-                    <th>Target Wilayah</th>
-                    <th>No. WhatsApp</th>
-                    <th>Gambar / QRIS</th>
-                    <th>Keterangan</th>
-                    <th style="text-align: center;">Aksi</th>
-                </tr>
+            <thead id="layanan-table-head">
+                <!-- Header Kolom Dinamis -->
             </thead>
             <tbody id="layanan-table-body">
                 <tr>
@@ -59,73 +53,126 @@
     </div>
 </div>
 
-<!-- MODAL FORM CRUD LAYANAN -->
+<!-- ================= MODAL 1: PREVIEW SURAT A5, TTD RW, DAN CETAK PDF ================= -->
+<div id="modalRwPreviewSurat" class="modal-backdrop" style="display: none; z-index: 9999; justify-content: center; align-items: center;">
+    <div class="modal-content" style="max-width: 720px; width: 100%; max-height: 90vh; overflow-y: auto;">
+        <div class="modal-header">
+            <h4><i class="fa-solid fa-file-pdf" style="color: #dc2626;"></i> Pratinjau Surat Pengantar (Format Cetak A5)</h4>
+            <button type="button" class="btn-close-modal" onclick="closeRwPreviewModal()">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+            <!-- DOKUMEN PREVIEW A5 (Diberi id printAreaSurat untuk Print/Download PDF) -->
+            <div id="printAreaSurat" style="background:#fff; border:1px solid #cbd5e1; padding:24px; font-family:'Times New Roman', Times, serif; font-size:12.5px; line-height:1.4; color:#000;">
+                <!-- Konten dinamis di-render oleh LayananModule.renderPreviewDocument() -->
+            </div>
+
+            <div id="rwSignatureStatusBox" style="margin-top: 14px; background:#f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <!-- Status TTD RW -->
+            </div>
+        </div>
+
+        <div class="modal-footer" style="display:flex; justify-content:space-between; width:100%;">
+            <button type="button" class="btn btn-secondary" onclick="closeRwPreviewModal()">Tutup</button>
+            <div style="display:flex; gap:8px;">
+                <button type="button" class="btn btn-secondary" onclick="window.LayananModule.downloadPDF()" style="background:#dc2626; color:#fff; border:none;">
+                    <i class="fa-solid fa-file-arrow-down"></i> Cetak / Download PDF
+                </button>
+                <button type="button" id="btnSahkanRw" class="btn btn-primary" onclick="window.LayananModule.approveSuratRw()">
+                    <i class="fa-solid fa-stamp"></i> Sahkan & Bubuhkan TTD RW
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= MODAL 2: ATUR TTD DIGITAL KETUA RW ================= -->
+<div id="modalRwSignature" class="modal-backdrop" style="display: none; z-index: 10000; justify-content: center; align-items: center;">
+    <div class="modal-content" style="max-width: 480px;">
+        <div class="modal-header">
+            <h4><i class="fa-solid fa-pen-nib"></i> Tanda Tangan Digital Ketua RW 011</h4>
+            <button type="button" class="btn-close-modal" onclick="closeRwSignatureModal()">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+            <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                <button id="tabRwDraw" onclick="switchRwTtdMode('draw')" class="btn btn-sm btn-primary" style="flex:1;">Draw Canvas</button>
+                <button id="tabRwUpload" onclick="switchRwTtdMode('upload')" class="btn btn-sm btn-secondary" style="flex:1;">Upload Gambar</button>
+            </div>
+
+            <div id="boxRwDraw">
+                <canvas id="canvasRwTtd" width="420" height="170" style="border: 1.5px dashed #94a3b8; border-radius: 8px; width: 100%; background: #fafafa; cursor: crosshair; touch-action: none;"></canvas>
+                <button onclick="clearRwCanvas()" style="background:none; border:none; color:#dc2626; font-size:0.8rem; cursor:pointer; margin-top:4px;">
+                    <i class="fa-solid fa-eraser"></i> Bersihkan Canvas
+                </button>
+            </div>
+
+            <div id="boxRwUpload" style="display:none;">
+                <input type="file" id="inputRwTtdFile" accept="image/*" class="form-control" onchange="previewRwTtdUpload(this)">
+                <div id="previewRwUploadWrapper" style="display:none; text-align:center; margin-top:10px;">
+                    <img id="imgRwUploaded" src="" alt="TTD RW" style="max-height: 120px; border: 1px solid #cbd5e1; padding: 4px; border-radius: 6px;">
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeRwSignatureModal()">Batal</button>
+            <button type="button" class="btn btn-primary" onclick="saveRwSignature()"><i class="fa-solid fa-floppy-disk"></i> Simpan TTD RW</button>
+        </div>
+    </div>
+</div>
+
+<!-- ================= MODAL 3: CRUD MASTER LAYANAN ================= -->
 <div id="layananModal" class="modal-backdrop" style="display: none;">
     <div class="modal-content">
         <div class="modal-header">
             <h4 id="modalLayananTitle"><i class="fa-solid fa-pen-to-square"></i> Form Layanan</h4>
             <button type="button" class="btn-close-modal" onclick="closeLayananModal()">&times;</button>
         </div>
-        
         <form id="formLayanan" onsubmit="handleFormSubmit(event)">
             <div class="modal-body">
                 <input type="hidden" name="id" id="layananId">
                 <input type="hidden" name="jenis_layanan" id="layananJenis" value="surat">
-
                 <div class="form-group">
                     <label>Nama Kegiatan / Layanan <span style="color:var(--danger-color)">*</span></label>
-                    <input type="text" name="nama_kegiatan" id="namaKegiatan" class="form-control" placeholder="Contoh: Pengantar KTP / Iuran Kebersihan" required>
+                    <input type="text" name="nama_kegiatan" id="namaKegiatan" class="form-control" placeholder="Contoh: Pengantar KTP / Iuran" required>
                 </div>
-
                 <div class="form-row">
                     <div class="form-group">
                         <label>Target Wilayah <span style="color:var(--danger-color)">*</span></label>
                         <select name="target_wilayah" id="targetWilayah" class="form-control" required>
                             <option value="">-- Pilih Wilayah --</option>
-                            <option value="RT 01">RT 01</option>
-                            <option value="RT 02">RT 02</option>
-                            <option value="RT 03">RT 03</option>
-                            <option value="RT 04">RT 04</option>
-                            <option value="RT 05">RT 05</option>
-                            <option value="RT 06">RT 06</option>
-                            <option value="RT 07">RT 07</option>    
-                            <option value="RT 08">RT 08</option>
-                            <option value="RT 09">RT 09</option>
-                            <option value="RT 10">RT 10</option>
-                            <option value="RT 11">RT 11</option>
-                            <option value="Ketua RW">Ketua RW</option>
+                            <option value="RT 01">RT 01</option><option value="RT 02">RT 02</option>
+                            <option value="RT 03">RT 03</option><option value="RT 04">RT 04</option>
+                            <option value="RT 05">RT 05</option><option value="RT 06">RT 06</option>
+                            <option value="RT 07">RT 07</option><option value="RT 08">RT 08</option>
+                            <option value="RT 09">RT 09</option><option value="RT 10">RT 10</option>
+                            <option value="RT 11">RT 11</option><option value="Ketua RW">Ketua RW</option>
                         </select>
                     </div>
-
                     <div class="form-group">
                         <label>Nomor WhatsApp Admin <span style="color:var(--danger-color)">*</span></label>
                         <input type="text" name="nomor_telepon" id="nomorTelepon" class="form-control" placeholder="08123456789" required>
                     </div>
                 </div>
-
                 <div class="form-group">
-                    <label>Keterangan / Syarat <span style="color:var(--text-muted); font-weight:normal;">(Opsional)</span></label>
-                    <textarea name="keterangan" id="keteranganLayanan" class="form-control" placeholder="Tambahkan catatan atau persyaratan..."></textarea>
+                    <label>Keterangan / Syarat</label>
+                    <textarea name="keterangan" id="keteranganLayanan" class="form-control"></textarea>
                 </div>
-
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Gambar Umum (.WebP / Image)</label>
+                        <label>Gambar Umum</label>
                         <input type="file" name="gambar_umum" id="gambarUmum" class="form-control" accept="image/*">
                     </div>
-
                     <div class="form-group" id="groupQris" style="display: none;">
-                        <label>Gambar QRIS (.WebP / Image)</label>
+                        <label>Gambar QRIS</label>
                         <input type="file" name="gambar_qris" id="gambarQris" class="form-control" accept="image/*">
                     </div>
                 </div>
             </div>
-
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" onclick="closeLayananModal()">Batal</button>
-                <button type="submit" class="btn btn-primary" id="btnSubmitLayanan">
-                    <i class="fa-solid fa-floppy-disk"></i> Simpan Data
-                </button>
+                <button type="submit" class="btn btn-primary" id="btnSubmitLayanan"><i class="fa-solid fa-floppy-disk"></i> Simpan Data</button>
             </div>
         </form>
     </div>
